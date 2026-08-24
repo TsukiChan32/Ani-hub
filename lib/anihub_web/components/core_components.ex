@@ -502,4 +502,28 @@ defmodule AnihubWeb.CoreComponents do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+  def search_bar(assigns) do
+    ~H"""
+    <form action="/search" method="get" class="mb-10">
+      <div class="flex gap-3">
+        <input
+          type="search"
+          name="q"
+          value={assigns[:query]}
+          placeholder="Search anime..."
+          required
+          class="w-full rounded-xl bg-zinc-800 px-4 py-3 outline-none ring-1 ring-zinc-700 focus:ring-zinc-500"
+        />
+
+        <button
+          type="submit"
+          class="rounded-xl bg-white px-6 py-3 font-semibold text-zinc-900"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+    """
+  end
 end

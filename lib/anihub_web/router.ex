@@ -18,6 +18,8 @@ defmodule AnihubWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/search", PageController, :search
+    get "/anime/:id", PageController, :show
   end
 
   # Other scopes may use custom stacks.

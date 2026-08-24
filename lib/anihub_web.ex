@@ -86,6 +86,7 @@ defmodule AnihubWeb do
       import Phoenix.HTML
       # Core UI components
       import AnihubWeb.CoreComponents
+      import AnihubWeb.AnimeComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS
