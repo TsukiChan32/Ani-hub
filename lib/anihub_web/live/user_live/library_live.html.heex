@@ -63,191 +63,185 @@
               <% filtered=filtered_library(@library, @filter) %>
 
                 <%= if filtered==[] do %>
-                  <%!-- Empty state --%>
-                    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-14 text-center">
-                      <p class="font-medium text-[var(--text)]">
-                        Nothing here yet
+                  <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-14 text-center">
+                    <p class="font-medium text-[var(--text)]">
+                      Nothing here yet
+                    </p>
+
+                    <%= if @filter !="all" do %>
+                      <p class="mt-2 text-sm text-[var(--text-muted)]">
+                        You don't have any {@filter} anime.
                       </p>
-
-                      <%= if @filter !="all" do %>
+                      <% else %>
                         <p class="mt-2 text-sm text-[var(--text-muted)]">
-                          You don't have any {@filter} anime.
+                          Add something from the anime page and it will show up here.
                         </p>
-                        <% else %>
-                          <p class="mt-2 text-sm text-[var(--text-muted)]">
-                            Add something from the anime page and it will show up here.
-                          </p>
-                          <% end %>
-                    </div>
-                    <% else %>
-                      <%!-- Library --%>
-                        <div class="space-y-4">
-                          <%= for item <- filtered do %>
-                            <article class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
-                              <%!-- Mobile: [96px cover] [title + metadata] [controls full width] Desktop: [110px cover]
-                                [title + controls] --%>
-                                <div
-                                  class="grid grid-cols-[96px_minmax(0,1fr)] gap-x-4 gap-y-5 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-x-5">
-                                  <%!-- Cover --%>
-                                    <div class="w-24 shrink-0 sm:row-span-2 sm:w-[110px]">
-                                      <%= if item.anime do %>
-                                        <.link navigate={~p"/anime/#{item.anime["id"]}"}
-                                          class="group block overflow-hidden rounded-xl">
-                                          <img src={item.anime["coverImage"]["large"]}
-                                            alt={item.anime["title"]["english"] || item.anime["title"]["romaji"]}
-                                            class="aspect-[2/3] w-full rounded-xl object-cover transition-transform duration-200 group-hover:scale-[1.03]" />
-                                        </.link>
-                                        <% else %>
-                                          <.link navigate={~p"/anime/#{item.entry.anilist_id}"}
-                                            class="flex aspect-[2/3] w-full items-center justify-center rounded-xl bg-[var(--surface-hover)] text-[var(--text-muted)]">
-                                            <.icon name="hero-photo" class="size-7" />
-                                          </.link>
-                                          <% end %>
-                                    </div>
+                        <% end %>
+                  </div>
+                  <% else %>
+                    <div class="space-y-4">
+                      <%= for item <- filtered do %>
+                        <article class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+                          <div
+                            class="grid grid-cols-[96px_minmax(0,1fr)] gap-x-4 gap-y-4 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-x-5">
+                            <%!-- Cover --%>
+                              <div class="w-24 shrink-0 sm:row-span-2 sm:w-[110px]">
+                                <%= if item.anime do %>
+                                  <.link navigate={~p"/anime/#{item.anime["id"]}"}
+                                    class="group block overflow-hidden rounded-xl">
+                                    <img src={item.anime["coverImage"]["large"]} alt={item.anime["title"]["english"] ||
+                                      item.anime["title"]["romaji"]}
+                                      class="aspect-[2/3] w-full rounded-xl object-cover transition-transform duration-200 group-hover:scale-[1.03]" />
+                                  </.link>
+                                  <% else %>
+                                    <.link navigate={~p"/anime/#{item.entry.anilist_id}"}
+                                      class="flex aspect-[2/3] w-full items-center justify-center rounded-xl bg-[var(--surface-hover)] text-[var(--text-muted)]">
+                                      <.icon name="hero-photo" class="size-7" />
+                                    </.link>
+                                    <% end %>
+                              </div>
 
-                                    <%!-- Title + metadata --%>
-                                      <div class="min-w-0 self-start">
-                                        <%= if item.anime do %>
-                                          <.link navigate={~p"/anime/#{item.anime["id"]}"}>
-                                            <h2
-                                              class="line-clamp-2 text-lg font-bold leading-snug text-[var(--text)] transition-colors hover:text-[var(--accent)]">
-                                              {item.anime["title"]["english"] || item.anime["title"]["romaji"]}
-                                            </h2>
-                                          </.link>
-                                          <% else %>
-                                            <.link navigate={~p"/anime/#{item.entry.anilist_id}"}>
-                                              <h2
-                                                class="line-clamp-2 text-lg font-bold leading-snug text-[var(--text)] transition-colors hover:text-[var(--accent)]">
-                                                Anime #{item.entry.anilist_id}
-                                              </h2>
-                                            </.link>
+                              <%!-- Title + metadata --%>
+                                <div class="min-w-0 self-start">
+                                  <%= if item.anime do %>
+                                    <.link navigate={~p"/anime/#{item.anime["id"]}"}>
+                                      <h2
+                                        class="line-clamp-2 text-lg font-bold leading-snug text-[var(--text)] transition-colors hover:text-[var(--accent)]">
+                                        {item.anime["title"]["english"] || item.anime["title"]["romaji"]}
+                                      </h2>
+                                    </.link>
+                                    <% else %>
+                                      <.link navigate={~p"/anime/#{item.entry.anilist_id}"}>
+                                        <h2
+                                          class="line-clamp-2 text-lg font-bold leading-snug text-[var(--text)] transition-colors hover:text-[var(--accent)]">
+                                          Anime #{item.entry.anilist_id}
+                                        </h2>
+                                      </.link>
 
-                                            <p class="mt-1 text-sm text-[var(--text-muted)]">
-                                              AniList metadata unavailable
-                                            </p>
+                                      <p class="mt-1 text-sm text-[var(--text-muted)]">
+                                        AniList metadata unavailable
+                                      </p>
+                                      <% end %>
+
+                                        <div class="mt-2 flex flex-wrap items-center gap-2">
+                                          <span class={status_badge_class(item.entry.status)}>
+                                            {item.entry.status}
+                                          </span>
+
+                                          <%= if item.anime && item.anime["averageScore"] do %>
+                                            <span class="text-sm text-[var(--text-muted)]">
+                                              AniList {item.anime["averageScore"]}%
+                                            </span>
                                             <% end %>
-
-                                              <div class="mt-2 flex flex-wrap items-center gap-2">
-                                                <span class={status_badge_class(item.entry.status)}>
-                                                  {item.entry.status}
-                                                </span>
-
-                                                <%= if item.anime && item.anime["averageScore"] do %>
-                                                  <span class="text-sm text-[var(--text-muted)]">
-                                                    AniList {item.anime["averageScore"]}%
-                                                  </span>
-                                                  <% end %>
-                                              </div>
-                                      </div>
-
-                                      <%!-- Controls --%>
-                                        <div class="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
-                                          <%!-- Status --%>
-                                            <div>
-                                              <p
-                                                class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                                                Status
-                                              </p>
-
-                                              <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-1">
-                                                <%= for {status, label} <- [ {"watching", "Watching" },
-                                                  {"planning", "Planning" }, {"completed", "Completed" },
-                                                  {"dropped", "Dropped" } ] do %>
-                                                  <button type="button" phx-click="set_status"
-                                                    phx-value-id={item.entry.id} phx-value-status={status}
-                                                    class={status_button_class(status, item.entry.status)}>
-                                                    {label}
-                                                  </button>
-                                                  <% end %>
-                                              </div>
-                                            </div>
-
-                                            <%!-- Progress --%>
-                                              <div class="mt-5">
-                                                <div class="flex items-center justify-between gap-3">
-                                                  <p
-                                                    class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                                                    Progress
-                                                  </p>
-
-                                                  <p class="text-sm font-semibold text-[var(--text)]">
-                                                    <%= if item.anime do %>
-                                                      {item.entry.progress || 0}/{item.anime["episodes"] || "?"}
-                                                      <% else %>
-                                                        {item.entry.progress || 0}/?
-                                                        <% end %>
-                                                  </p>
-                                                </div>
-
-                                                <div class="mt-2 flex items-center gap-3">
-                                                  <div class="min-w-0 flex-1">
-                                                    <%= if item.anime && is_integer(item.anime["episodes"]) &&
-                                                      item.anime["episodes"]> 0 do %>
-                                                      <progress value={item.entry.progress || 0}
-                                                        max={item.anime["episodes"]}
-                                                        class="block h-2 w-full overflow-hidden rounded-full">
-                                                        {item.entry.progress || 0}
-                                                      </progress>
-                                                      <% else %>
-                                                        <div class="h-2 w-full rounded-full bg-[var(--surface-hover)]">
-                                                        </div>
-                                                        <% end %>
-                                                  </div>
-
-                                                  <div class="flex shrink-0 gap-2">
-                                                    <button type="button" phx-click="decrement_progress"
-                                                      phx-value-id={item.entry.id} disabled={(item.entry.progress || 0)
-                                                      <=0}
-                                                      class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface-hover)] text-lg font-semibold text-[var(--text)] transition-colors hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-30"
-                                                      aria-label="Decrease progress">
-                                                      −
-                                                    </button>
-
-                                                    <button type="button" phx-click="increment_progress"
-                                                      phx-value-id={item.entry.id} disabled={ item.anime &&
-                                                      is_integer(item.anime["episodes"]) && (item.entry.progress || 0)>=
-                                                      item.anime["episodes"]
-                                                      }
-                                                      class="flex size-10 items-center justify-center rounded-xl
-                                                      bg-[var(--accent)] text-lg font-semibold text-white
-                                                      transition-colors hover:bg-[var(--accent-hover)]
-                                                      disabled:cursor-not-allowed disabled:opacity-30"
-                                                      aria-label="Increase progress"
-                                                      >
-                                                      +
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              </div>
-
-                                              <%!-- Score --%>
-                                                <div class="mt-5 flex items-center justify-between gap-4">
-                                                  <p
-                                                    class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                                                    Your score
-                                                  </p>
-
-                                                  <form phx-change="set_score" class="shrink-0">
-                                                    <input type="hidden" name="entry_id" value={item.entry.id} />
-
-                                                    <select name="score"
-                                                      class="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-[var(--text)] outline-none transition-colors hover:bg-[var(--surface-hover)] focus:border-[var(--accent)]">
-                                                      <option value="" selected={is_nil(item.entry.score)}>
-                                                        Not rated
-                                                      </option>
-
-                                                      <%= for score <- 1..10 do %>
-                                                        <option value={score} selected={item.entry.score==score}>
-                                                          {score}/10
-                                                        </option>
-                                                        <% end %>
-                                                    </select>
-                                                  </form>
-                                                </div>
                                         </div>
                                 </div>
-                            </article>
-                            <% end %>
-                        </div>
+
+                                <%!-- Controls --%>
+                                  <div class="col-span-2 min-w-0 sm:col-span-1 sm:col-start-2">
+                                    <%!-- Status --%>
+                                      <div>
+                                        <p
+                                          class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                                          Status
+                                        </p>
+
+                                        <div class="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap sm:gap-1">
+                                          <%= for {status, label} <- [ {"watching", "Watching" },
+                                            {"planning", "Planning" }, {"completed", "Completed" },
+                                            {"dropped", "Dropped" } ] do %>
+                                            <button type="button" phx-click="set_status" phx-value-id={item.entry.id}
+                                              phx-value-status={status} class={status_button_class(status,
+                                              item.entry.status)}>
+                                              {label}
+                                            </button>
+                                            <% end %>
+                                        </div>
+                                      </div>
+
+                                      <%!-- Progress --%>
+                                        <div class="mt-4">
+                                          <div class="flex items-center justify-between gap-3">
+                                            <p
+                                              class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                                              Progress
+                                            </p>
+
+                                            <p class="text-sm font-semibold text-[var(--text)]">
+                                              <%= if item.anime do %>
+                                                {item.entry.progress || 0}/{item.anime["episodes"] || "?"}
+                                                <% else %>
+                                                  {item.entry.progress || 0}/?
+                                                  <% end %>
+                                            </p>
+                                          </div>
+
+                                          <div class="mt-2 flex items-center gap-3">
+                                            <div class="min-w-0 flex-1">
+                                              <%= if item.anime && is_integer(item.anime["episodes"]) &&
+                                                item.anime["episodes"]> 0 do %>
+                                                <progress value={item.entry.progress || 0} max={item.anime["episodes"]}
+                                                  class="block h-2 w-full overflow-hidden rounded-full">
+                                                  {item.entry.progress || 0}
+                                                </progress>
+                                                <% else %>
+                                                  <div class="h-2 w-full rounded-full bg-[var(--surface-hover)]">
+                                                  </div>
+                                                  <% end %>
+                                            </div>
+
+                                            <div class="flex shrink-0 gap-2">
+                                              <button type="button" phx-click="decrement_progress"
+                                                phx-value-id={item.entry.id} disabled={(item.entry.progress || 0) <=0}
+                                                class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface-hover)] text-lg font-semibold text-[var(--text)] transition-colors hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-30"
+                                                aria-label="Decrease progress">
+                                                −
+                                              </button>
+
+                                              <button type="button" phx-click="increment_progress"
+                                                phx-value-id={item.entry.id} disabled={ item.anime &&
+                                                is_integer(item.anime["episodes"]) && (item.entry.progress || 0)>=
+                                                item.anime["episodes"]
+                                                }
+                                                class="flex size-10 items-center justify-center rounded-xl
+                                                bg-[var(--accent)] text-lg font-semibold text-white transition-colors
+                                                hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed
+                                                disabled:opacity-30"
+                                                aria-label="Increase progress"
+                                                >
+                                                +
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <%!-- Score --%>
+                                          <div class="mt-4 flex items-center justify-between gap-4">
+                                            <p
+                                              class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                                              Your score
+                                            </p>
+
+                                            <form phx-change="set_score" class="shrink-0">
+                                              <input type="hidden" name="entry_id" value={item.entry.id} />
+
+                                              <select name="score"
+                                                class="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-[var(--text)] outline-none transition-colors hover:bg-[var(--surface-hover)] focus:border-[var(--accent)]">
+                                                <option value="" selected={is_nil(item.entry.score)}>
+                                                  Not rated
+                                                </option>
+
+                                                <%= for score <- 1..10 do %>
+                                                  <option value={score} selected={item.entry.score==score}>
+                                                    {score}/10
+                                                  </option>
+                                                  <% end %>
+                                              </select>
+                                            </form>
+                                          </div>
+                                  </div>
+                          </div>
+                        </article>
                         <% end %>
+                    </div>
+                    <% end %>
 </div>
