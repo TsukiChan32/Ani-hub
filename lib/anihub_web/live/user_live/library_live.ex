@@ -342,4 +342,14 @@ defmodule AnihubWeb.LibraryLive do
         "#{base} bg-[var(--surface)] text-[var(--text)]"
     end
   end
+
+  defp status_button_class(status, current_status) do
+    base = "rounded-xl px-3 py-2 text-sm font-medium transition-colors"
+
+    if to_string(current_status) == status do
+      "#{base} bg-[var(--accent-soft)] text-[var(--accent)]"
+    else
+      "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+    end
+  end
 end
