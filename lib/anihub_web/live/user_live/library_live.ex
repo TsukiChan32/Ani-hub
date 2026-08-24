@@ -11,12 +11,18 @@ defmodule AnihubWeb.LibraryLive do
     scope = socket.assigns.current_scope
     entries = Library.list_anime_entries(scope)
 
-    ids = Enum.map(entries, & &1.anilist_id)
+    ids =
+      entries
+      |> Enum.map(& &1.anilist_id)
+      |> Enum.uniq()
 
-    anime =
+    {anime, anime_load_error} =
       case Anilist.anime_by_ids(ids) do
-        {:ok, anime} -> anime
-        {:error, _reason} -> []
+        {:ok, anime} ->
+          {anime, false}
+
+        {:error, _reason} ->
+          {[], true}
       end
 
     anime_by_id =
@@ -24,22 +30,22 @@ defmodule AnihubWeb.LibraryLive do
         {item["id"], item}
       end)
 
+    # IMPORTANT:
+    # We keep every database entry even if AniList metadata
+    # could not be loaded.
     library =
-      entries
-      |> Enum.map(fn entry ->
+      Enum.map(entries, fn entry ->
         %{
           entry: entry,
           anime: anime_by_id[entry.anilist_id]
         }
       end)
-      |> Enum.reject(fn item ->
-        is_nil(item.anime)
-      end)
 
     {:ok,
      socket
      |> assign(:library, library)
-     |> assign(:filter, "all")}
+     |> assign(:filter, "all")
+     |> assign(:anime_load_error, anime_load_error)}
   end
 
   # --------------------------------------------------
@@ -61,7 +67,7 @@ defmodule AnihubWeb.LibraryLive do
     with {:ok, entry_id} <- parse_id(id),
          {:ok, item} <- find_library_item(socket.assigns.library, entry_id) do
       entry = item.entry
-      episodes = item.anime["episodes"]
+      episodes = anime_episodes(item.anime)
       current_progress = entry.progress || 0
 
       new_progress =
@@ -170,7 +176,7 @@ defmodule AnihubWeb.LibraryLive do
     with {:ok, entry_id} <- parse_id(id),
          {:ok, item} <- find_library_item(socket.assigns.library, entry_id) do
       entry = item.entry
-      episodes = item.anime["episodes"]
+      episodes = anime_episodes(item.anime)
 
       attrs =
         if status == "completed" and is_integer(episodes) do
@@ -215,6 +221,13 @@ defmodule AnihubWeb.LibraryLive do
         {:noreply, put_flash(socket, :error, "Could not update library entry")}
     end
   end
+
+  # --------------------------------------------------
+  # ANIME METADATA HELPERS
+  # --------------------------------------------------
+
+  defp anime_episodes(nil), do: nil
+  defp anime_episodes(anime), do: anime["episodes"]
 
   # --------------------------------------------------
   # LOOKUPS
