@@ -168,3 +168,24 @@ body {
   background: var(--accent);
   color: #ffffff;
 }
+
+progress {
+  appearance: none;
+  border: 0;
+  background: var(--surface-strong);
+}
+
+progress::-webkit-progress-bar {
+  background: var(--surface-strong);
+  border-radius: 9999px;
+}
+
+progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 9999px;
+}
+
+progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: 9999px;
+}

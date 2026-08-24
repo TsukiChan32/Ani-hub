@@ -23,8 +23,11 @@ defmodule Anihub.Anilist do
             coverImage {
               large
             }
+            bannerImage
+            description
             averageScore
             episodes
+            seasonYear
           }
         }
       }
@@ -132,46 +135,75 @@ defmodule Anihub.Anilist do
       {:airing_schedule, from_timestamp, to_timestamp},
       @airing_schedule_ttl,
       fn ->
-        query = """
-        query ($from: Int, $to: Int) {
-          Page(page: 1, perPage: 50) {
-            airingSchedules(
-              airingAt_greater: $from
-              airingAt_lesser: $to
-              sort: TIME
-            ) {
-              id
-              episode
-              airingAt
+        airing_schedule_page(from_timestamp, to_timestamp, 1)
+      end
+    )
+  end
 
-              media {
-                id
-                title {
-                  romaji
-                  english
-                }
-                coverImage {
-                  large
-                }
-                episodes
-              }
+  defp airing_schedule_page(from_timestamp, to_timestamp, page) do
+    query = """
+    query ($from: Int, $to: Int, $page: Int) {
+      Page(page: $page, perPage: 50) {
+        pageInfo {
+          hasNextPage
+        }
+
+        airingSchedules(
+          airingAt_greater: $from
+          airingAt_lesser: $to
+          sort: TIME
+        ) {
+          id
+          episode
+          airingAt
+
+          media {
+            id
+            title {
+              romaji
+              english
             }
+            coverImage {
+              large
+            }
+            episodes
           }
         }
-        """
+      }
+    }
+    """
 
-        case request(query, %{
-               from: from_timestamp,
-               to: to_timestamp
-             }) do
-          {:ok, %{"Page" => %{"airingSchedules" => schedules}}} ->
-            {:ok, schedules}
+    case request(query, %{
+           from: from_timestamp,
+           to: to_timestamp,
+           page: page
+         }) do
+      {:ok,
+       %{
+         "Page" => %{
+           "airingSchedules" => schedules,
+           "pageInfo" => %{"hasNextPage" => true}
+         }
+       }} ->
+        case airing_schedule_page(from_timestamp, to_timestamp, page + 1) do
+          {:ok, next_schedules} ->
+            {:ok, schedules ++ next_schedules}
 
           error ->
             error
         end
-      end
-    )
+
+      {:ok,
+       %{
+         "Page" => %{
+           "airingSchedules" => schedules
+         }
+       }} ->
+        {:ok, schedules}
+
+      error ->
+        error
+    end
   end
 
   def anime(id) do
@@ -183,19 +215,71 @@ defmodule Anihub.Anilist do
         query ($id: Int) {
           Media(id: $id, type: ANIME) {
             id
+
             title {
               romaji
               english
+              native
             }
+
             coverImage {
               extraLarge
             }
+
+            bannerImage
             description
             averageScore
             episodes
             genres
             status
+            season
             seasonYear
+            format
+            duration
+            source
+            countryOfOrigin
+
+            startDate {
+              year
+              month
+              day
+            }
+
+            endDate {
+              year
+              month
+              day
+            }
+
+            studios(isMain: true) {
+              nodes {
+                id
+                name
+              }
+            }
+
+            relations {
+              edges {
+                relationType
+
+                node {
+                  id
+                  type
+
+                  title {
+                    romaji
+                    english
+                  }
+
+                  coverImage {
+                    large
+                  }
+
+                  format
+                  seasonYear
+                }
+              }
+            }
           }
         }
         """

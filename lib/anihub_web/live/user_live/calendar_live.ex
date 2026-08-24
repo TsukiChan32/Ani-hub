@@ -2,34 +2,77 @@ defmodule AnihubWeb.CalendarLive do
   use AnihubWeb, :live_view
 
   alias Anihub.Anilist
+  alias Anihub.Library
 
   @impl true
   def mount(_params, _session, socket) do
     today = Date.utc_today()
+    week_start = beginning_of_week(today)
 
+    watching_ids =
+      case socket.assigns.current_scope do
+        nil ->
+          MapSet.new()
+
+        scope ->
+          scope
+          |> Library.list_anime_entries()
+          |> Enum.filter(fn entry ->
+            to_string(entry.status) == "watching"
+          end)
+          |> Enum.map(& &1.anilist_id)
+          |> MapSet.new()
+      end
+
+    {:ok,
+     socket
+     |> assign(:today, today)
+     |> assign(:watching_ids, watching_ids)
+     |> load_week(week_start)}
+  end
+
+  @impl true
+  def handle_event("previous_week", _params, socket) do
+    week_start = Date.add(socket.assigns.week_start, -7)
+
+    {:noreply, load_week(socket, week_start)}
+  end
+
+  @impl true
+  def handle_event("next_week", _params, socket) do
+    week_start = Date.add(socket.assigns.week_start, 7)
+
+    {:noreply, load_week(socket, week_start)}
+  end
+
+  @impl true
+  def handle_event("this_week", _params, socket) do
     week_start =
-      Date.add(
-        today,
-        -(Date.day_of_week(today) - 1)
-      )
+      socket.assigns.today
+      |> beginning_of_week()
 
+    {:noreply, load_week(socket, week_start)}
+  end
+
+  defp load_week(socket, week_start) do
     week_end = Date.add(week_start, 7)
 
+    # We deliberately fetch a little before and after the selected week.
+    # The browser decides which local day each airing belongs to.
     from_timestamp =
       week_start
+      |> Date.add(-1)
       |> DateTime.new!(~T[00:00:00], "Etc/UTC")
       |> DateTime.to_unix()
 
     to_timestamp =
       week_end
+      |> Date.add(1)
       |> DateTime.new!(~T[00:00:00], "Etc/UTC")
       |> DateTime.to_unix()
 
     schedules =
-      case Anilist.airing_schedule(
-             from_timestamp,
-             to_timestamp
-           ) do
+      case Anilist.airing_schedule(from_timestamp, to_timestamp) do
         {:ok, schedules} ->
           schedules
 
@@ -38,34 +81,19 @@ defmodule AnihubWeb.CalendarLive do
       end
 
     days =
-      week_start
-      |> week_dates()
-      |> Enum.map(fn date ->
-        %{
-          date: date,
-          schedules: schedules_for_date(schedules, date)
-        }
+      Enum.map(0..6, fn offset ->
+        Date.add(week_start, offset)
       end)
 
-    {:ok,
-     socket
-     |> assign(:week_start, week_start)
-     |> assign(:days, days)}
+    socket
+    |> assign(:week_start, week_start)
+    |> assign(:week_end, Date.add(week_start, 6))
+    |> assign(:days, days)
+    |> assign(:schedules, schedules)
   end
 
-  defp week_dates(start_date) do
-    Enum.map(0..6, fn offset ->
-      Date.add(start_date, offset)
-    end)
-  end
-
-  defp schedules_for_date(schedules, date) do
-    Enum.filter(schedules, fn schedule ->
-      schedule["airingAt"]
-      |> DateTime.from_unix!()
-      |> DateTime.to_date()
-      |> Kernel.==(date)
-    end)
+  defp beginning_of_week(date) do
+    Date.add(date, -(Date.day_of_week(date) - 1))
   end
 
   defp day_name(date) do
@@ -80,9 +108,11 @@ defmodule AnihubWeb.CalendarLive do
     end
   end
 
-  defp time_for(schedule) do
-    schedule["airingAt"]
-    |> DateTime.from_unix!()
-    |> Calendar.strftime("%H:%M")
+  defp library_status(watching_ids, media_id) do
+    if MapSet.member?(watching_ids, media_id) do
+      "watching"
+    else
+      "none"
+    end
   end
 end

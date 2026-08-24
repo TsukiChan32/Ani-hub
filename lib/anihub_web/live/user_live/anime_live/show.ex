@@ -98,13 +98,14 @@ defmodule AnihubWeb.AnimeLive.Show do
     anime = socket.assigns.anime
     scope = socket.assigns.current_scope
 
+    current_progress = entry.progress || 0
     max_episodes = anime["episodes"]
 
     new_progress =
-      if max_episodes do
-        min(entry.progress + 1, max_episodes)
+      if is_integer(max_episodes) do
+        min(current_progress + 1, max_episodes)
       else
-        entry.progress + 1
+        current_progress + 1
       end
 
     update_progress(socket, scope, entry, new_progress)
@@ -115,28 +116,33 @@ defmodule AnihubWeb.AnimeLive.Show do
     entry = socket.assigns.library_entry
     scope = socket.assigns.current_scope
 
-    update_progress(
-      socket,
-      scope,
-      entry,
-      max(entry.progress - 1, 0)
-    )
+    current_progress = entry.progress || 0
+    new_progress = max(current_progress - 1, 0)
+
+    update_progress(socket, scope, entry, new_progress)
   end
 
   defp update_progress(socket, scope, entry, progress) do
-    anime = socket.assigns.anime
-    episodes = anime["episodes"]
+    episodes = socket.assigns.anime["episodes"]
 
     attrs =
-      if is_integer(episodes) and progress >= episodes do
-        %{
-          progress: episodes,
-          status: "completed"
-        }
-      else
-        %{
-          progress: progress
-        }
+      cond do
+        is_integer(episodes) and progress >= episodes ->
+          %{
+            progress: episodes,
+            status: "completed"
+          }
+
+        to_string(entry.status) == "completed" ->
+          %{
+            progress: progress,
+            status: "watching"
+          }
+
+        true ->
+          %{
+            progress: progress
+          }
       end
 
     case Library.update_anime_entry(scope, entry, attrs) do
@@ -177,5 +183,126 @@ defmodule AnihubWeb.AnimeLive.Show do
       {_, false} ->
         "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
     end
+  end
+
+  defp anime_status_label("RELEASING"), do: "Currently airing"
+  defp anime_status_label("FINISHED"), do: "Finished airing"
+  defp anime_status_label("NOT_YET_RELEASED"), do: "Not yet released"
+  defp anime_status_label("CANCELLED"), do: "Cancelled"
+  defp anime_status_label("HIATUS"), do: "On hiatus"
+  defp anime_status_label(status) when is_binary(status), do: String.capitalize(status)
+  defp anime_status_label(_), do: nil
+
+  defp season_label(nil), do: nil
+
+  defp season_label(season) do
+    season
+    |> String.downcase()
+    |> String.capitalize()
+  end
+
+  defp format_label(nil), do: nil
+  defp format_label("TV"), do: "TV"
+  defp format_label("TV_SHORT"), do: "TV Short"
+  defp format_label("MOVIE"), do: "Movie"
+  defp format_label("SPECIAL"), do: "Special"
+  defp format_label("OVA"), do: "OVA"
+  defp format_label("ONA"), do: "ONA"
+  defp format_label("MUSIC"), do: "Music"
+
+  defp format_label(format) do
+    format
+    |> String.replace("_", " ")
+    |> String.downcase()
+    |> String.capitalize()
+  end
+
+  defp main_studio(%{"nodes" => [%{"name" => name} | _]}), do: name
+  defp main_studio(_), do: nil
+
+  defp airing_status_dot_class(status) do
+    base = "size-2 rounded-full"
+
+    case status do
+      "RELEASING" ->
+        "#{base} bg-emerald-500"
+
+      "FINISHED" ->
+        "#{base} bg-[var(--text-muted)]"
+
+      "NOT_YET_RELEASED" ->
+        "#{base} bg-violet-500"
+
+      "HIATUS" ->
+        "#{base} bg-amber-500"
+
+      "CANCELLED" ->
+        "#{base} bg-rose-500"
+
+      _ ->
+        "#{base} bg-[var(--text-muted)]"
+    end
+  end
+
+  defp related_anime(anime) do
+    anime
+    |> get_in(["relations", "edges"])
+    |> List.wrap()
+    |> Enum.filter(fn edge ->
+      get_in(edge, ["node", "type"]) == "ANIME"
+    end)
+    |> Enum.sort_by(fn edge ->
+      relation_priority(edge["relationType"])
+    end)
+    |> Enum.take(6)
+  end
+
+  defp relation_priority("PREQUEL"), do: 1
+  defp relation_priority("SEQUEL"), do: 2
+  defp relation_priority("PARENT"), do: 3
+  defp relation_priority("SIDE_STORY"), do: 4
+  defp relation_priority("SPIN_OFF"), do: 5
+  defp relation_priority("ALTERNATIVE"), do: 6
+  defp relation_priority("CHARACTER"), do: 7
+  defp relation_priority(_), do: 8
+
+  defp relation_label(nil), do: nil
+
+  defp relation_label(type) do
+    type
+    |> String.replace("_", " ")
+    |> String.downcase()
+    |> String.capitalize()
+  end
+
+  defp source_label(nil), do: nil
+
+  defp source_label(source) do
+    source
+    |> String.replace("_", " ")
+    |> String.downcase()
+    |> String.capitalize()
+  end
+
+  defp country_label("JP"), do: "Japan"
+  defp country_label("KR"), do: "South Korea"
+  defp country_label("CN"), do: "China"
+  defp country_label("TW"), do: "Taiwan"
+  defp country_label(country), do: country
+
+  defp anime_date(nil), do: nil
+
+  defp anime_date(%{"year" => nil}), do: nil
+
+  defp anime_date(%{"year" => year, "month" => nil}) do
+    Integer.to_string(year)
+  end
+
+  defp anime_date(%{"year" => year, "month" => month, "day" => nil}) do
+    "#{month}/#{year}"
+  end
+
+  defp anime_date(%{"year" => year, "month" => month, "day" => day}) do
+    "#{day}/#{month}/#{year}"
   end
 end
