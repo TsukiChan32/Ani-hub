@@ -100,6 +100,71 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* Make LiveView wrapper divs transparent for layout */
-[data-phx-session], [data-phx-teleported-src] { display: contents }
+[data-phx-session],
+[data-phx-teleported-src] {
+  display: contents
+}
 
 /* This file is for your main application CSS */
+/* ========================================
+   ANIHUB THEME
+   ======================================== */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface-hover: #eef1f8;
+  --surface-strong: #e5e9f3;
+
+  --text: #25283a;
+  --text-muted: #6f7488;
+
+  --border: #dfe3ed;
+
+  --accent: #5865d8;
+  --accent-hover: #4c58c4;
+  --accent-soft: #e9ebff;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  /*
+   * Deliberately NOT near-black.
+   * Softer contrast is much nicer for long sessions.
+   */
+  --bg: #202536;
+  --surface: #292f42;
+  --surface-hover: #343b50;
+  --surface-strong: #3d455c;
+
+  --text: #e7e9f2;
+  --text-muted: #aeb4c7;
+
+  --border: #42495e;
+
+  --accent: #7c83e8;
+  --accent-hover: #8d93ee;
+  --accent-soft: #343956;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: #ffffff;
+}

@@ -15,7 +15,8 @@ defmodule Anihub.Application do
       # Start a worker by calling: Anihub.Worker.start_link(arg)
       # {Anihub.Worker, arg},
       # Start to serve requests, typically the last entry
-      AnihubWeb.Endpoint
+      AnihubWeb.Endpoint,
+      Anihub.Anilist.Cache
     ]
 
     # See https://elixir.hexdocs.pm/Supervisor.html

@@ -1,0 +1,43 @@
+<main class="mx-auto max-w-7xl px-6 py-10">
+  <header class="mb-10">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-4xl font-bold">Your Library</h1>
+        <p class="mt-2 text-zinc-400">
+          Your anime collection
+        </p>
+      </div>
+
+      <a href="/" class="text-zinc-400 hover:text-white">
+        ← Home
+      </a>
+    </div>
+  </header>
+
+  <.search_bar />
+
+  <%= for {status, title} <- [ {:watching, "Watching" }, {:planning, "Planning" }, {:completed, "Completed" },
+        {:dropped, "Dropped" } ] do %>
+    <section class="mb-14">
+      <h2 class="mb-6 text-2xl font-bold">
+        {title}
+      </h2>
+
+      <% items = Map.get(@library, status, []) %>
+
+      <%= if Enum.empty?(items) do %>
+        <p class="text-zinc-500">
+          Nothing here yet.
+        </p>
+      <% else %>
+        <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <%= for item <- items do %>
+            <%= if item.anime do %>
+              <.anime_card anime={item.anime} />
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+</main>

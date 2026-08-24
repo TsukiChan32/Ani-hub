@@ -1,0 +1,129 @@
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+  <%!-- Navigation --%>
+  <.app_nav current={:calendar} />
+
+  <%!-- Search --%>
+  <div class="relative z-50 mb-12">
+    <.live_component module={AnihubWeb.SearchComponent} id="calendar-search" />
+  </div>
+
+  <%!-- Header --%>
+  <section class="mb-8">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
+      Airing
+    </p>
+
+    <h1 class="mt-1 text-3xl font-bold tracking-tight text-[var(--text)]">
+      Release Calendar
+    </h1>
+
+    <p class="mt-2 text-sm text-[var(--text-muted)]">
+      Anime episodes airing this week.
+    </p>
+  </section>
+
+  <%!-- Calendar days --%>
+  <div class="space-y-10">
+    <%= for day <- @days do %>
+      <section>
+        <div class="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-[var(--accent)]">
+              {day_name(day.date)}
+            </p>
+
+            <h2 class="text-xl font-bold text-[var(--text)]">
+              {Calendar.strftime(day.date, "%d %B")}
+            </h2>
+          </div>
+
+          <span class="text-sm text-[var(--text-muted)]">
+            {length(day.schedules)} releases
+          </span>
+        </div>
+
+        <%= if day.schedules==[] do %>
+          <div class="
+            rounded-2xl
+            border border-[var(--border)]
+            bg-[var(--surface)]
+            px-5 py-8
+            text-sm
+            text-[var(--text-muted)]
+          ">
+            Nothing airing.
+          </div>
+        <% else %>
+          <div class="
+            grid grid-cols-1
+            gap-3
+            sm:grid-cols-2
+            lg:grid-cols-3
+          ">
+            <%= for schedule <- day.schedules do %>
+              <.link
+                navigate={~p"/anime/#{schedule["media"]["id"]}"}
+                class="
+                  group
+                  flex gap-4
+                  rounded-2xl
+                  border border-[var(--border)]
+                  bg-[var(--surface)]
+                  p-3
+                  transition-colors
+                  hover:bg-[var(--surface-hover)]
+                "
+              >
+                <img
+                  src={schedule["media"]["coverImage"]["large"]}
+                  alt={
+                    schedule["media"]["title"]["english"] ||
+                      schedule["media"]["title"]["romaji"]
+                  }
+                  class="
+                    h-24 w-16
+                    shrink-0
+                    rounded-xl
+                    object-cover
+                  "
+                />
+
+                <div class="min-w-0 flex-1">
+                  <h3 class="
+                    line-clamp-2
+                    font-semibold
+                    text-[var(--text)]
+                    transition-colors
+                    group-hover:text-[var(--accent)]
+                  ">
+                    {schedule["media"]["title"]["english"] ||
+                      schedule["media"]["title"]["romaji"]}
+                  </h3>
+
+                  <div class="
+                    mt-2
+                    flex flex-wrap items-center gap-2
+                    text-sm
+                    text-[var(--text-muted)]
+                  ">
+                    <span>
+                      Episode {schedule["episode"]}
+                    </span>
+
+                    <span class="text-[var(--border)]">
+                      •
+                    </span>
+
+                    <span>
+                      {time_for(schedule)}
+                    </span>
+                  </div>
+                </div>
+              </.link>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+</div>

@@ -1,6 +1,8 @@
 defmodule AnihubWeb.PageController do
   use AnihubWeb, :controller
 
+  alias Anihub.Library
+
   def home(conn, _params) do
     {:ok, anime} = Anihub.Anilist.trending()
 
@@ -13,15 +15,31 @@ defmodule AnihubWeb.PageController do
     render(conn, :search, anime: anime, query: query)
   end
 
-  def show(conn, %{"id" => id}) do
-    id = String.to_integer(id)
+  def library(conn, _params) do
+    scope = conn.assigns.current_scope
+    entries = Library.list_anime_entries(scope)
 
-    case Anihub.Anilist.anime(id) do
-      {:ok, %{"Media" => anime}} ->
-        render(conn, :show, anime: anime)
+    ids = Enum.map(entries, & &1.anilist_id)
 
-      {:error, :not_found} ->
-        send_resp(conn, 404, "Anime not found")
-    end
+    {:ok, anime} = Anihub.Anilist.anime_by_ids(ids)
+
+    anime_by_id =
+      Map.new(anime, fn item ->
+        {item["id"], item}
+      end)
+
+    library =
+      entries
+      |> Enum.map(fn entry ->
+        %{
+          entry: entry,
+          anime: anime_by_id[entry.anilist_id]
+        }
+      end)
+      |> Enum.group_by(fn item ->
+        item.entry.status
+      end)
+
+    render(conn, :library, library: library)
   end
 end

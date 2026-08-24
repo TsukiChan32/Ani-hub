@@ -1,19 +1,19 @@
 <main class="mx-auto max-w-7xl px-6 py-10">
-    <a href="/" class="text-sm text-zinc-400 hover:text-white">
-        ← Home
-    </a>
+  <a href="/" class="text-sm text-zinc-400 hover:text-white">
+    ← Home
+  </a>
 
-    <header class="my-8">
-        <h1 class="text-3xl font-bold">
-            Results for "{@query}"
-        </h1>
-    </header>
+  <header class="my-8">
+    <h1 class="text-3xl font-bold">
+      Results for "{@query}"
+    </h1>
+  </header>
 
-    <.search_bar query={@query} />
+  <.search_bar query={@query} />
 
-    <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        <%= for anime <- @anime do %>
-            <.anime_card anime={anime} />
-            <% end %>
-    </div>
+  <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+    <%= for anime <- @anime do %>
+      <.anime_card anime={anime} />
+    <% end %>
+  </div>
 </main>

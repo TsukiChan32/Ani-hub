@@ -526,4 +526,87 @@ defmodule AnihubWeb.CoreComponents do
     </form>
     """
   end
+
+  attr :current, :atom, required: true
+
+  def app_nav(assigns) do
+    ~H"""
+    <nav class="mb-10 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-3">
+        <div class="
+          flex size-10 items-center justify-center
+          rounded-xl
+          bg-[var(--accent)]
+          font-bold text-white
+          transition-colors
+          hover:bg-[var(--accent-hover)]
+        ">
+          A
+        </div>
+
+        <span class="hidden text-xl font-bold tracking-tight text-[var(--text)] sm:block">
+          Anihub
+        </span>
+      </a>
+
+      <div class="flex items-center gap-1">
+        <a
+          href="/"
+          class={nav_link_class(@current == :home)}
+        >
+          Home
+        </a>
+
+        <a
+          href="/library"
+          class={nav_link_class(@current == :library)}
+        >
+          Library
+        </a>
+
+        <a
+          href="/calendar"
+          class={nav_link_class(@current == :calendar)}
+        >
+          Calendar
+        </a>
+
+        <div class="mx-2 h-5 w-px bg-[var(--border)]"></div>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle theme"
+          class="
+    flex size-10 cursor-pointer items-center justify-center
+    rounded-xl
+    text-[var(--text-muted)]
+    transition-colors
+    hover:bg-[var(--surface-hover)]
+    hover:text-[var(--text)]
+    "
+        >
+          <span class="theme-icon-dark">
+            <.icon name="hero-moon" class="size-5" />
+          </span>
+
+          <span class="theme-icon-light hidden">
+            <.icon name="hero-sun" class="size-5" />
+          </span>
+        </button>
+      </div>
+    </nav>
+    """
+  end
+
+  defp nav_link_class(active?) do
+    base =
+      "rounded-xl px-3 py-2 text-sm font-medium transition-colors sm:px-4"
+
+    if active? do
+      "#{base} bg-[var(--accent-soft)] text-[var(--accent)]"
+    else
+      "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+    end
+  end
 end
