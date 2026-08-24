@@ -28,6 +28,24 @@ defmodule AnihubWeb.AnimeLive.Show do
          socket
          |> put_flash(:error, "Anime not found")
          |> push_navigate(to: ~p"/")}
+
+      {:error, {:http_error, 429, _response}} ->
+        {:ok,
+         socket
+         |> put_flash(
+           :error,
+           "AniList is temporarily rate limiting requests. Try again in a moment."
+         )
+         |> push_navigate(to: ~p"/")}
+
+      {:error, _reason} ->
+        {:ok,
+         socket
+         |> put_flash(
+           :error,
+           "Could not load this anime right now. Please try again."
+         )
+         |> push_navigate(to: ~p"/")}
     end
   end
 
