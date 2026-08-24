@@ -1,110 +1,135 @@
-<div id="release-calendar" phx-hook="LocalCalendar" data-week-start={Date.to_iso8601(@week_start)}
-  class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+<div
+  id="release-calendar"
+  phx-hook="LocalCalendar"
+  data-week-start={Date.to_iso8601(@week_start)}
+  class="mx-auto max-w-6xl px-4 py-8 sm:px-6"
+>
   <.app_nav current={:calendar} current_scope={@current_scope} />
 
   <%!-- Search --%>
-    <div class="relative z-50 mb-12">
-      <.live_component module={AnihubWeb.SearchComponent} id="calendar-search" />
+  <div class="relative z-50 mb-12">
+    <.live_component module={AnihubWeb.SearchComponent} id="calendar-search" />
+  </div>
+
+  <%!-- Header --%>
+  <section class="mb-8">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
+      Airing
+    </p>
+
+    <div class="mt-1 flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-[var(--text)]">
+          Release Calendar
+        </h1>
+
+        <p class="mt-2 text-sm text-[var(--text-muted)]">
+          Anime episodes airing this week.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          phx-click="previous_week"
+          class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-hover)]"
+          aria-label="Previous week"
+        >
+          <.icon name="hero-chevron-left" class="size-5" />
+        </button>
+
+        <button
+          phx-click="this_week"
+          class="rounded-xl bg-[var(--accent-soft)] px-4 py-2.5 text-sm font-medium text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
+        >
+          This week
+        </button>
+
+        <button
+          phx-click="next_week"
+          class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-hover)]"
+          aria-label="Next week"
+        >
+          <.icon name="hero-chevron-right" class="size-5" />
+        </button>
+      </div>
     </div>
 
-    <%!-- Header --%>
-      <section class="mb-8">
-        <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-          Airing
-        </p>
+    <p class="mt-4 text-sm font-medium text-[var(--text-muted)]">
+      {Calendar.strftime(@week_start, "%d %B")} – {Calendar.strftime(@week_end, "%d %B %Y")}
+    </p>
+    <div class="mt-5 flex gap-2">
+      <button
+        type="button"
+        data-calendar-filter="all"
+        class="calendar-filter rounded-xl bg-[var(--accent-soft)] px-4 py-2 text-sm font-medium text-[var(--accent)] transition-colors"
+      >
+        All
+      </button>
 
-        <div class="mt-1 flex flex-wrap items-end justify-between gap-5">
+      <button
+        type="button"
+        data-calendar-filter="watching"
+        class="calendar-filter rounded-xl px-4 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+      >
+        Watching only
+      </button>
+    </div>
+  </section>
+
+  <%!-- Calendar days --%>
+  <div class="space-y-10">
+    <%= for day <- @days do %>
+      <section data-calendar-day={Date.to_iso8601(day)} class="calendar-day">
+        <div class="mb-4 flex items-end justify-between gap-4">
           <div>
-            <h1 class="text-3xl font-bold tracking-tight text-[var(--text)]">
-              Release Calendar
-            </h1>
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-semibold text-[var(--accent)]">
+                {day_name(day)}
+              </p>
 
-            <p class="mt-2 text-sm text-[var(--text-muted)]">
-              Anime episodes airing this week.
-            </p>
+              <span
+                data-today-badge
+                class="hidden rounded-lg bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]"
+              >
+                Today
+              </span>
+            </div>
+
+            <h2 class="mt-1 text-xl font-bold text-[var(--text)]">
+              {Calendar.strftime(day, "%d %B")}
+            </h2>
           </div>
 
-          <div class="flex items-center gap-2">
-            <button phx-click="previous_week"
-              class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-hover)]"
-              aria-label="Previous week">
-              <.icon name="hero-chevron-left" class="size-5" />
-            </button>
-
-            <button phx-click="this_week"
-              class="rounded-xl bg-[var(--accent-soft)] px-4 py-2.5 text-sm font-medium text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]">
-              This week
-            </button>
-
-            <button phx-click="next_week"
-              class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--text)] transition-colors hover:bg-[var(--surface-hover)]"
-              aria-label="Next week">
-              <.icon name="hero-chevron-right" class="size-5" />
-            </button>
-          </div>
+          <span data-release-count class="text-sm text-[var(--text-muted)]">
+            0 releases
+          </span>
         </div>
 
-        <p class="mt-4 text-sm font-medium text-[var(--text-muted)]">
-          {Calendar.strftime(@week_start, "%d %B")} – {Calendar.strftime(@week_end, "%d %B %Y")}
-        </p>
-        <div class="mt-5 flex gap-2">
-          <button type="button" data-calendar-filter="all"
-            class="calendar-filter rounded-xl bg-[var(--accent-soft)] px-4 py-2 text-sm font-medium text-[var(--accent)] transition-colors">
-            All
-          </button>
+        <div data-day-results class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
 
-          <button type="button" data-calendar-filter="watching"
-            class="calendar-filter rounded-xl px-4 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text)]">
-            Watching only
-          </button>
+        <div
+          data-day-empty
+          class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-8 text-sm text-[var(--text-muted)]"
+        >
+          Nothing airing.
         </div>
       </section>
+    <% end %>
+  </div>
 
-      <%!-- Calendar days --%>
-        <div class="space-y-10">
-          <%= for day <- @days do %>
-            <section data-calendar-day={Date.to_iso8601(day)} class="calendar-day">
-              <div class="mb-4 flex items-end justify-between gap-4">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <p class="text-sm font-semibold text-[var(--accent)]">
-                      {day_name(day)}
-                    </p>
-
-                    <span data-today-badge
-                      class="hidden rounded-lg bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
-                      Today
-                    </span>
-                  </div>
-
-                  <h2 class="mt-1 text-xl font-bold text-[var(--text)]">
-                    {Calendar.strftime(day, "%d %B")}
-                  </h2>
-                </div>
-
-                <span data-release-count class="text-sm text-[var(--text-muted)]">
-                  0 releases
-                </span>
-              </div>
-
-              <div data-day-results class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-
-              <div data-day-empty
-                class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-8 text-sm text-[var(--text-muted)]">
-                Nothing airing.
-              </div>
-            </section>
-            <% end %>
-        </div>
-
-        <%!-- Raw airing data used by LocalCalendar hook --%>
-          <div class="hidden">
-            <%= for schedule <- @schedules do %>
-              <div data-airing data-airing-at={schedule["airingAt"]} data-media-id={schedule["media"]["id"]}
-                data-title={schedule["media"]["title"]["english"] || schedule["media"]["title"]["romaji"]}
-                data-cover={schedule["media"]["coverImage"]["large"]} data-episode={schedule["episode"]}
-                data-library-status={library_status(@watching_ids, schedule["media"]["id"])}>
-              </div>
-              <% end %>
-          </div>
+  <%!-- Raw airing data used by LocalCalendar hook --%>
+  <div class="hidden">
+    <%= for schedule <- @schedules do %>
+      <div
+        data-airing
+        data-airing-at={schedule["airingAt"]}
+        data-media-id={schedule["media"]["id"]}
+        data-title={schedule["media"]["title"]["english"] || schedule["media"]["title"]["romaji"]}
+        data-cover={schedule["media"]["coverImage"]["large"]}
+        data-episode={schedule["episode"]}
+        data-library-status={library_status(@watching_ids, schedule["media"]["id"])}
+      >
+      </div>
+    <% end %>
+  </div>
 </div>
