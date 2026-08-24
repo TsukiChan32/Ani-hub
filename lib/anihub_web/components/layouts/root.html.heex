@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
 
-<head>
-  <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
 
-  <meta name="csrf-token" content={get_csrf_token()} />
-
-  <.live_title default="AniHub" suffix="" phx-no-format>
+    <.live_title default="AniHub" suffix="" phx-no-format>
     {assigns[:page_title]}
   </.live_title>
 
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-  <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
 
-  <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
-  </script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
+    </script>
 
-  <%!-- Apply the saved AniHub theme before the page is painted. This prevents the light theme briefly flashing before
+    <%!-- Apply the saved AniHub theme before the page is painted. This prevents the light theme briefly flashing before
     app.js loads. --%>
     <script>
       (() => {
@@ -39,10 +37,9 @@
         }
       })();
     </script>
-</head>
+  </head>
 
-<body>
-  {@inner_content}
-</body>
-
+  <body>
+    {@inner_content}
+  </body>
 </html>

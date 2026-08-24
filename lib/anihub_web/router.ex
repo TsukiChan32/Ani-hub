@@ -24,7 +24,7 @@ defmodule AnihubWeb.Router do
   scope "/", AnihubWeb do
     pipe_through :browser
 
-    get "/search", PageController, :search
+    live "/search", SearchLive, :index
   end
 
   # Other scopes may use custom stacks.

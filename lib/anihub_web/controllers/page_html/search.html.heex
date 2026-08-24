@@ -1,19 +1,124 @@
-<main class="mx-auto max-w-7xl px-6 py-10">
-  <a href="/" class="text-sm text-zinc-400 hover:text-white">
-    ← Home
-  </a>
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+  <.app_nav current={:search} current_scope={@current_scope} />
 
-  <header class="my-8">
-    <h1 class="text-3xl font-bold">
-      Results for "{@query}"
+  <section class="mb-8">
+    <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
+      Search
+    </p>
+
+    <h1 class="mt-1 text-3xl font-bold tracking-tight text-[var(--text)]">
+      Results for “{@query}”
     </h1>
-  </header>
 
-  <.search_bar query={@query} />
+    <p class="mt-2 text-sm text-[var(--text-muted)]">
+      {length(@anime)} results found on AniList.
+    </p>
+  </section>
 
-  <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-    <%= for anime <- @anime do %>
-      <.anime_card anime={anime} />
-    <% end %>
+  <div class="relative z-50 mb-10">
+    <.search_bar query={@query} />
   </div>
-</main>
+
+  <%= if @anime==[] do %>
+    <div class="
+      rounded-2xl
+      border border-[var(--border)]
+      bg-[var(--surface)]
+      px-6 py-14
+      text-center
+    ">
+      <div class="
+        mx-auto flex size-12 items-center justify-center
+        rounded-xl
+        bg-[var(--accent-soft)]
+        text-[var(--accent)]
+      ">
+        <.icon name="hero-magnifying-glass" class="size-6" />
+      </div>
+
+      <p class="mt-4 font-medium text-[var(--text)]">
+        No results found
+      </p>
+
+      <p class="mt-2 text-sm text-[var(--text-muted)]">
+        Nothing matched “{@query}”.
+      </p>
+    </div>
+  <% else %>
+    <div class="
+      grid grid-cols-2
+      gap-x-4 gap-y-8
+      sm:grid-cols-3
+      md:grid-cols-4
+      lg:grid-cols-5
+    ">
+      <%= for anime <- @anime do %>
+        <.link navigate={~p"/anime/#{anime["id"]}"} class="group block min-w-0">
+          <div class="
+            overflow-hidden
+            rounded-2xl
+            bg-[var(--surface)]
+          ">
+            <img
+              src={anime["coverImage"]["large"]}
+              alt={anime["title"]["english"] || anime["title"]["romaji"]}
+              class="
+                aspect-[2/3]
+                w-full
+                object-cover
+                transition-transform
+                duration-200
+                group-hover:scale-[1.02]
+              "
+            />
+          </div>
+
+          <div class="mt-3">
+            <h2 class="
+              truncate
+              font-semibold
+              text-[var(--text)]
+              transition-colors
+              group-hover:text-[var(--accent)]
+            ">
+              {anime["title"]["english"] || anime["title"]["romaji"]}
+            </h2>
+
+            <div class="
+              mt-1
+              flex flex-wrap items-center gap-2
+              text-sm
+              text-[var(--text-muted)]
+            ">
+              <%= if anime["averageScore"] do %>
+                <span>
+                  {anime["averageScore"]}%
+                </span>
+              <% end %>
+
+              <%= if anime["episodes"] do %>
+                <span class="text-[var(--border)]">
+                  •
+                </span>
+
+                <span>
+                  {anime["episodes"]} episodes
+                </span>
+              <% end %>
+
+              <%= if anime["seasonYear"] do %>
+                <span class="text-[var(--border)]">
+                  •
+                </span>
+
+                <span>
+                  {anime["seasonYear"]}
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </.link>
+      <% end %>
+    </div>
+  <% end %>
+</div>

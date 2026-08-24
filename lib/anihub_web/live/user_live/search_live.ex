@@ -3,6 +3,7 @@ defmodule AnihubWeb.SearchLive do
 
   alias Anihub.Anilist
 
+  @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
@@ -10,30 +11,34 @@ defmodule AnihubWeb.SearchLive do
      |> assign(:results, [])}
   end
 
-  def handle_event("search", %{"q" => query}, socket) do
-    query = String.trim(query)
+  @impl true
+  def handle_params(params, _uri, socket) do
+    query =
+      params
+      |> Map.get("q", "")
+      |> String.trim()
 
-    cond do
-      String.length(query) < 2 ->
-        {:noreply,
-         socket
-         |> assign(:query, query)
-         |> assign(:results, [])}
+    {:noreply, search(socket, query)}
+  end
 
-      true ->
-        case Anilist.search(query) do
-          {:ok, results} ->
-            {:noreply,
-             socket
-             |> assign(:query, query)
-             |> assign(:results, Enum.take(results, 6))}
+  defp search(socket, query) when byte_size(query) < 2 do
+    socket
+    |> assign(:query, query)
+    |> assign(:results, [])
+  end
 
-          {:error, _reason} ->
-            {:noreply,
-             socket
-             |> assign(:query, query)
-             |> assign(:results, [])}
-        end
-    end
+  defp search(socket, query) do
+    results =
+      case Anilist.search(query) do
+        {:ok, results} ->
+          results
+
+        {:error, _reason} ->
+          []
+      end
+
+    socket
+    |> assign(:query, query)
+    |> assign(:results, results)
   end
 end
