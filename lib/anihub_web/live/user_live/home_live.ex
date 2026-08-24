@@ -8,12 +8,8 @@ defmodule AnihubWeb.HomeLive do
   def mount(_params, _session, socket) do
     anime =
       case Anilist.trending() do
-        {:ok, anime} ->
-          anime
-
-        {:error, reason} ->
-          IO.inspect(reason, label: "ANILIST TRENDING ERROR")
-          []
+        {:ok, anime} -> anime
+        {:error, _reason} -> []
       end
 
     watching = load_watching(socket.assigns.current_scope)
@@ -48,12 +44,8 @@ defmodule AnihubWeb.HomeLive do
 
     anime =
       case Anilist.anime_by_ids(ids) do
-        {:ok, anime} ->
-          anime
-
-        {:error, reason} ->
-          IO.inspect(reason, label: "ANILIST LIBRARY ERROR")
-          []
+        {:ok, anime} -> anime
+        {:error, _reason} -> []
       end
 
     anime_by_id =
