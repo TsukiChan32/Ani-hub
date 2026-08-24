@@ -9,7 +9,7 @@ defmodule Anihub.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Anihub", "contact@example.com"})
+      |> from({"Anihub", "onboarding@resend.dev"})
       |> subject(subject)
       |> text_body(body)
 
