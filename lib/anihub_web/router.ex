@@ -23,8 +23,6 @@ defmodule AnihubWeb.Router do
 
   scope "/", AnihubWeb do
     pipe_through :browser
-
-    live "/search", SearchLive, :index
   end
 
   # Other scopes may use custom stacks.
@@ -76,6 +74,7 @@ defmodule AnihubWeb.Router do
       live "/anime/:id", AnimeLive.Show, :show
       live "/live-search", SearchLive, :index
       live "/calendar", CalendarLive, :index
+      live "/search", SearchLive, :index
     end
 
     post "/users/log-in", UserSessionController, :create
