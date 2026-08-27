@@ -530,198 +530,212 @@ defmodule AnihubWeb.CoreComponents do
   attr :current, :atom, required: true
   attr :current_scope, :map, default: nil
 
-def app_nav(assigns) do
-  ~H"""
-  <nav class="relative z-[100] mb-5 border-b border-[var(--border)]">
-    <div class="flex items-center justify-between gap-3 py-3">
-      <%!-- Logo --%>
-      <a
-        href="/"
-        class="flex shrink-0 items-center gap-2 text-[var(--text)]"
-      >
-        <span class="border border-[var(--button-border)] bg-[var(--accent)] px-2 py-1 text-sm font-bold text-white">
-          A
-        </span>
+  def app_nav(assigns) do
+    ~H"""
+    <nav class="relative z-[100] mb-5 border-b border-[var(--border)]">
+      <div class="flex items-center justify-between gap-3 py-3">
+        <%!-- Logo --%>
+        <a
+          href="/"
+          class="flex shrink-0 items-center gap-2 text-[var(--text)]"
+        >
+          <span class="border border-[var(--button-border)] bg-[var(--accent)] px-2 py-1 text-sm font-bold text-white">
+            A
+          </span>
 
-        <span class="hidden text-lg font-bold sm:block">
-          Anihub
-        </span>
-      </a>
+          <span class="hidden text-lg font-bold sm:block">
+            Anihub
+          </span>
+        </a>
 
-      <div class="flex items-center">
-        <%!-- Desktop navigation --%>
-        <div class="hidden items-center sm:flex">
-          <a
-            href="/"
-            class={nav_link_class(@current == :home)}
-          >
-            Home
-          </a>
-
-          <a
-            href="/library"
-            class={nav_link_class(@current == :library)}
-          >
-            Library
-          </a>
-
-          <a
-            href="/calendar"
-            class={nav_link_class(@current == :calendar)}
-          >
-            Calendar
-          </a>
-        </div>
-
-        <span class="mx-3 hidden text-[var(--border)] sm:block">
-          |
-        </span>
-
-        <%!-- Logged in account menu --%>
-        <%= if @current_scope do %>
-          <div class="dropdown dropdown-end relative">
-            <button
-              type="button"
-              tabindex="0"
-              aria-label="Account menu"
-              class="border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+        <div class="flex items-center">
+          <%!-- Desktop navigation --%>
+          <div class="hidden items-center sm:flex">
+            <a
+              href="/"
+              class={nav_link_class(@current == :home)}
             >
-              Account ▼
-            </button>
+              Home
+            </a>
 
-            <div
-              tabindex="0"
-              class="dropdown-content absolute right-0 top-9 z-[200] w-64 border border-[var(--border)] bg-[var(--surface)] shadow-md"
+            <a
+              href="/discover"
+              class={nav_link_class(@current == :discover)}
             >
-              <div class="old-panel-header px-3 py-1.5">
-                <p class="text-xs font-bold uppercase text-[var(--text)]">
-                  Account
-                </p>
-              </div>
+              Discover
+            </a>
 
-              <div class="border-b border-[var(--border)] px-3 py-2">
-                <p class="text-xs text-[var(--text-muted)]">
-                  Signed in as
-                </p>
+            <a
+              href="/library"
+              class={nav_link_class(@current == :library)}
+            >
+              Library
+            </a>
 
-                <p class="mt-0.5 truncate text-sm font-semibold text-[var(--text)]">
-                  {@current_scope.user.email}
-                </p>
-              </div>
+            <a
+              href="/calendar"
+              class={nav_link_class(@current == :calendar)}
+            >
+              Calendar
+            </a>
+          </div>
 
-              <div class="py-1">
-                <a
-                  href="/users/settings"
-                  class="block px-3 py-1.5 text-sm text-[var(--accent)] hover:bg-[var(--surface-hover)] hover:underline"
-                >
-                  Settings »
-                </a>
+          <span class="mx-3 hidden text-[var(--border)] sm:block">
+            |
+          </span>
 
-                <.link
-                  href="/users/log-out"
-                  method="delete"
-                  class="block w-full px-3 py-1.5 text-left text-sm text-rose-500 hover:bg-[var(--surface-hover)] hover:underline"
-                >
-                  Log out »
-                </.link>
+          <%!-- Logged in account menu --%>
+          <%= if @current_scope do %>
+            <div class="dropdown dropdown-end relative">
+              <button
+                type="button"
+                tabindex="0"
+                aria-label="Account menu"
+                class="border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+              >
+                Account ▼
+              </button>
+
+              <div
+                tabindex="0"
+                class="dropdown-content absolute right-0 top-9 z-[200] w-64 border border-[var(--border)] bg-[var(--surface)] shadow-md"
+              >
+                <div class="old-panel-header px-3 py-1.5">
+                  <p class="text-xs font-bold uppercase text-[var(--text)]">
+                    Account
+                  </p>
+                </div>
+
+                <div class="border-b border-[var(--border)] px-3 py-2">
+                  <p class="text-xs text-[var(--text-muted)]">
+                    Signed in as
+                  </p>
+
+                  <p class="mt-0.5 truncate text-sm font-semibold text-[var(--text)]">
+                    {@current_scope.user.email}
+                  </p>
+                </div>
+
+                <div class="py-1">
+                  <a
+                    href="/users/settings"
+                    class="block px-3 py-1.5 text-sm text-[var(--accent)] hover:bg-[var(--surface-hover)] hover:underline"
+                  >
+                    Settings »
+                  </a>
+
+                  <.link
+                    href="/users/log-out"
+                    method="delete"
+                    class="block w-full px-3 py-1.5 text-left text-sm text-rose-500 hover:bg-[var(--surface-hover)] hover:underline"
+                  >
+                    Log out »
+                  </.link>
+                </div>
               </div>
             </div>
-          </div>
-        <% else %>
-          <%!-- Guest auth links --%>
-          <div class="hidden items-center gap-1 sm:flex">
+          <% else %>
+            <%!-- Guest auth links --%>
+            <div class="hidden items-center gap-1 sm:flex">
+              <a
+                href="/users/log-in"
+                class="px-2 py-1 text-sm text-[var(--accent)] hover:underline"
+              >
+                Log in
+              </a>
+
+              <span class="text-[var(--border)]">
+                |
+              </span>
+
+              <a
+                href="/users/register"
+                class="px-2 py-1 text-sm font-semibold text-[var(--accent)] hover:underline"
+              >
+                Sign up
+              </a>
+            </div>
+
+            <%!-- Guest mobile auth --%>
             <a
               href="/users/log-in"
-              class="px-2 py-1 text-sm text-[var(--accent)] hover:underline"
+              class="border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs text-[var(--accent)] sm:hidden"
             >
-              Log in
+              Login
             </a>
+          <% end %>
 
-            <span class="text-[var(--border)]">
-              |
+          <%!-- Theme toggle --%>
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle theme"
+            class="ml-2 border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+          >
+            <span class="theme-icon-dark">
+              ◐
             </span>
 
-            <a
-              href="/users/register"
-              class="px-2 py-1 text-sm font-semibold text-[var(--accent)] hover:underline"
-            >
-              Sign up
-            </a>
-          </div>
-
-          <%!-- Guest mobile auth --%>
-          <a
-            href="/users/log-in"
-            class="border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs text-[var(--accent)] sm:hidden"
-          >
-            Login
-          </a>
-        <% end %>
-
-        <%!-- Theme toggle --%>
-        <button
-          id="theme-toggle"
-          type="button"
-          aria-label="Toggle theme"
-          class="ml-2 border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
-        >
-          <span class="theme-icon-dark">
-            ◐
-          </span>
-
-          <span class="theme-icon-light hidden">
-            ◑
-          </span>
-        </button>
+            <span class="theme-icon-light hidden">
+              ◑
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <%!-- Mobile navigation --%>
-    <div class="grid grid-cols-3 border-x border-t border-[var(--border)] sm:hidden">
-      <a
-        href="/"
-        class={mobile_nav_link_class(@current == :home)}
-      >
-        Home
-      </a>
+      <%!-- Mobile navigation --%>
+      <div class="grid grid-cols-4 border-x border-t border-[var(--border)] sm:hidden">
+        <a
+          href="/"
+          class={mobile_nav_link_class(@current == :home)}
+        >
+          Home
+        </a>
 
-      <a
-        href="/library"
-        class={mobile_nav_link_class(@current == :library)}
-      >
-        Library
-      </a>
+        <a
+          href="/discover"
+          class={mobile_nav_link_class(@current == :discover)}
+        >
+          Discover
+        </a>
 
-      <a
-        href="/calendar"
-        class={mobile_nav_link_class(@current == :calendar)}
-      >
-        Calendar
-      </a>
-    </div>
-  </nav>
-  """
-end
+        <a
+          href="/library"
+          class={mobile_nav_link_class(@current == :library)}
+        >
+          Library
+        </a>
 
-defp nav_link_class(active?) do
-  base =
-    "px-3 py-1 text-sm"
+        <a
+          href="/calendar"
+          class={mobile_nav_link_class(@current == :calendar)}
+        >
+          Calendar
+        </a>
+      </div>
+    </nav>
+    """
+  end
 
-  if active? do
-    "#{base} font-bold text-[var(--accent)] underline"
-  else
-    "#{base} text-[var(--text-muted)] hover:text-[var(--accent)] hover:underline"
+  defp nav_link_class(active?) do
+    base =
+      "px-3 py-1 text-sm"
+
+    if active? do
+      "#{base} font-bold text-[var(--accent)] underline"
+    else
+      "#{base} text-[var(--text-muted)] hover:text-[var(--accent)] hover:underline"
+    end
+  end
+
+  defp mobile_nav_link_class(active?) do
+    base =
+      "border-r border-[var(--border)] px-2 py-2 text-center text-sm last:border-r-0"
+
+    if active? do
+      "#{base} bg-[var(--surface-hover)] font-bold text-[var(--accent)]"
+    else
+      "#{base} bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent)]"
+    end
   end
 end
-
-defp mobile_nav_link_class(active?) do
-  base =
-    "border-r border-[var(--border)] px-2 py-2 text-center text-sm last:border-r-0"
-
-  if active? do
-    "#{base} bg-[var(--surface-hover)] font-bold text-[var(--accent)]"
-  else
-    "#{base} bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent)]"
-  end
-end
-end 

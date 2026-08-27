@@ -8,6 +8,8 @@ defmodule Anihub.Anilist do
   @anime_ttl :timer.hours(1)
   @anime_by_ids_ttl :timer.minutes(10)
   @airing_schedule_ttl :timer.minutes(10)
+  @discover_ttl :timer.minutes(10)
+  @genres_ttl :timer.hours(24)
 
   def trending do
     Cache.fetch(:trending, @trending_ttl, fn ->
@@ -87,6 +89,225 @@ defmodule Anihub.Anilist do
       end
     )
   end
+
+  # --------------------------------------------------
+  # DISCOVER
+  # --------------------------------------------------
+
+  def discover(params \\ %{}) do
+    params = normalize_discover_params(params)
+
+    Cache.fetch(
+      {:discover, params},
+      @discover_ttl,
+      fn ->
+        discover_request(params)
+      end
+    )
+  end
+
+  defp discover_request(params) do
+    query = """
+    query (
+      $page: Int
+      $season: MediaSeason
+      $year: Int
+      $genre: String
+      $sort: [MediaSort]
+    ) {
+      Page(page: $page, perPage: 30) {
+        pageInfo {
+          currentPage
+          hasNextPage
+          lastPage
+          total
+        }
+
+        media(
+          type: ANIME
+          season: $season
+          seasonYear: $year
+          genre: $genre
+          sort: $sort
+          isAdult: false
+        ) {
+          id
+
+          title {
+            romaji
+            english
+          }
+
+          coverImage {
+            large
+          }
+
+          averageScore
+          popularity
+          episodes
+          format
+          status
+          season
+          seasonYear
+          genres
+        }
+      }
+    }
+    """
+
+    variables = %{
+      page: params.page,
+      season: params.season,
+      year: params.year,
+      genre: params.genre,
+      sort: [params.sort]
+    }
+
+    case request(query, variables) do
+      {:ok,
+       %{
+         "Page" => %{
+           "media" => anime,
+           "pageInfo" => page_info
+         }
+       }} ->
+        {:ok,
+         %{
+           anime: anime,
+           page_info: page_info
+         }}
+
+      error ->
+        error
+    end
+  end
+
+  # --------------------------------------------------
+  # GENRES
+  # --------------------------------------------------
+
+  def genres do
+    Cache.fetch(
+      :genres,
+      @genres_ttl,
+      fn ->
+        query = """
+        query {
+          GenreCollection
+        }
+        """
+
+        case request(query) do
+          {:ok, %{"GenreCollection" => genres}} ->
+            {:ok, genres}
+
+          error ->
+            error
+        end
+      end
+    )
+  end
+
+  # --------------------------------------------------
+  # DISCOVER PARAMS
+  # --------------------------------------------------
+
+  defp normalize_discover_params(params) do
+    %{
+      page:
+        params
+        |> get_param(:page, 1)
+        |> normalize_page(),
+      season:
+        params
+        |> get_param(:season)
+        |> normalize_season(),
+      year:
+        params
+        |> get_param(:year)
+        |> normalize_year(),
+      genre:
+        params
+        |> get_param(:genre)
+        |> normalize_genre(),
+      sort:
+        params
+        |> get_param(:sort, "trending")
+        |> normalize_discover_sort()
+    }
+  end
+
+  defp get_param(params, key, default \\ nil) do
+    Map.get(params, key) ||
+      Map.get(params, Atom.to_string(key)) ||
+      default
+  end
+
+  defp normalize_page(page) when is_integer(page) and page > 0,
+    do: page
+
+  defp normalize_page(page) when is_binary(page) do
+    case Integer.parse(page) do
+      {page, ""} when page > 0 -> page
+      _ -> 1
+    end
+  end
+
+  defp normalize_page(_), do: 1
+
+  defp normalize_year(year) when is_integer(year),
+    do: year
+
+  defp normalize_year(year) when is_binary(year) do
+    case Integer.parse(year) do
+      {year, ""} -> year
+      _ -> nil
+    end
+  end
+
+  defp normalize_year(_), do: nil
+
+  defp normalize_season(season)
+       when season in ["WINTER", "SPRING", "SUMMER", "FALL"],
+       do: season
+
+  defp normalize_season(season) when is_binary(season) do
+    season
+    |> String.upcase()
+    |> normalize_season()
+  end
+
+  defp normalize_season(_), do: nil
+
+  defp normalize_genre(nil), do: nil
+  defp normalize_genre(""), do: nil
+
+  defp normalize_genre(genre) when is_binary(genre) do
+    String.trim(genre)
+  end
+
+  defp normalize_genre(_), do: nil
+
+  defp normalize_discover_sort("trending"),
+    do: "TRENDING_DESC"
+
+  defp normalize_discover_sort("popular"),
+    do: "POPULARITY_DESC"
+
+  defp normalize_discover_sort("score"),
+    do: "SCORE_DESC"
+
+  defp normalize_discover_sort("TRENDING_DESC"),
+    do: "TRENDING_DESC"
+
+  defp normalize_discover_sort("POPULARITY_DESC"),
+    do: "POPULARITY_DESC"
+
+  defp normalize_discover_sort("SCORE_DESC"),
+    do: "SCORE_DESC"
+
+  defp normalize_discover_sort(_),
+    do: "TRENDING_DESC"
 
   def anime_by_ids([]), do: {:ok, []}
 

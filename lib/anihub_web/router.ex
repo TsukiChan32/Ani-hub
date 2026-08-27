@@ -75,6 +75,7 @@ defmodule AnihubWeb.Router do
       live "/live-search", SearchLive, :index
       live "/calendar", CalendarLive, :index
       live "/search", SearchLive, :index
+      live "/discover", DiscoverLive
     end
 
     post "/users/log-in", UserSessionController, :create
