@@ -30,9 +30,6 @@ defmodule AnihubWeb.LibraryLive do
         {item["id"], item}
       end)
 
-    # IMPORTANT:
-    # We keep every database entry even if AniList metadata
-    # could not be loaded.
     library =
       Enum.map(entries, fn entry ->
         %{
@@ -257,9 +254,7 @@ defmodule AnihubWeb.LibraryLive do
   defp parse_id(_), do: {:error, :invalid_id}
 
   defp parse_score(score)
-       when is_integer(score) and
-              score >= 1 and
-              score <= 10 do
+       when is_integer(score) and score >= 1 and score <= 10 do
     {:ok, score}
   end
 
@@ -293,27 +288,12 @@ defmodule AnihubWeb.LibraryLive do
 
   defp filter_class(filter, current_filter) do
     base =
-      "rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+      "border px-3 py-2 text-sm font-semibold"
 
     if filter == current_filter do
-      case filter do
-        "watching" ->
-          "#{base} bg-blue-500/15 text-blue-500"
-
-        "planning" ->
-          "#{base} bg-violet-500/15 text-violet-500"
-
-        "completed" ->
-          "#{base} bg-emerald-500/15 text-emerald-500"
-
-        "dropped" ->
-          "#{base} bg-rose-500/15 text-rose-500"
-
-        _ ->
-          "#{base} bg-[var(--accent-soft)] text-[var(--accent)]"
-      end
+      "#{base} border-[var(--button-border)] bg-[var(--accent)] text-white"
     else
-      "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+      "#{base} border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)]"
     end
   end
 
@@ -322,34 +302,37 @@ defmodule AnihubWeb.LibraryLive do
   # --------------------------------------------------
 
   defp status_badge_class(status) do
-    base =
-      "rounded-lg px-2.5 py-1 text-xs font-semibold capitalize backdrop-blur-sm"
+    base = "inline-block border px-2 py-0.5 text-xs font-semibold"
 
     case to_string(status) do
       "watching" ->
-        "#{base} bg-blue-500/85 text-white"
+        "#{base} border-blue-700 bg-blue-700 text-white"
 
       "planning" ->
-        "#{base} bg-violet-500/85 text-white"
+        "#{base} border-violet-700 bg-violet-700 text-white"
 
       "completed" ->
-        "#{base} bg-emerald-500/85 text-white"
+        "#{base} border-emerald-700 bg-emerald-700 text-white"
 
       "dropped" ->
-        "#{base} bg-rose-500/85 text-white"
+        "#{base} border-rose-700 bg-rose-700 text-white"
 
       _ ->
-        "#{base} bg-[var(--surface)] text-[var(--text)]"
+        "#{base} border-[var(--border)] bg-[var(--surface)] text-[var(--text)]"
     end
   end
 
+  # --------------------------------------------------
+  # STATUS BUTTON
+  # --------------------------------------------------
+
   defp status_button_class(status, current_status) do
-    base = "rounded-xl px-3 py-2 text-sm font-medium transition-colors"
+    base = "border px-3 py-1.5 text-xs font-semibold"
 
     if to_string(current_status) == status do
-      "#{base} bg-[var(--accent-soft)] text-[var(--accent)]"
+      "#{base} border-[var(--button-border)] bg-[var(--accent)] text-white"
     else
-      "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
+      "#{base} border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)]"
     end
   end
 end

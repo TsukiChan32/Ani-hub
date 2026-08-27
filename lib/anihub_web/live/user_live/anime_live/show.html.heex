@@ -71,7 +71,10 @@
               <dd>{@anime["duration"]} min</dd>
             </div>
 
-            <div :if={@anime["season"] && @anime["seasonYear"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+            <div
+              :if={@anime["season"] && @anime["seasonYear"]}
+              class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5"
+            >
               <dt class="font-semibold text-[var(--text-muted)]">Season</dt>
               <dd>{season_label(@anime["season"])} {@anime["seasonYear"]}</dd>
             </div>
@@ -81,22 +84,34 @@
               <dd>{source_label(@anime["source"])}</dd>
             </div>
 
-            <div :if={main_studio(@anime["studios"])} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+            <div
+              :if={main_studio(@anime["studios"])}
+              class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5"
+            >
               <dt class="font-semibold text-[var(--text-muted)]">Studio</dt>
               <dd>{main_studio(@anime["studios"])}</dd>
             </div>
 
-            <div :if={@anime["countryOfOrigin"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+            <div
+              :if={@anime["countryOfOrigin"]}
+              class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5"
+            >
               <dt class="font-semibold text-[var(--text-muted)]">Country</dt>
               <dd>{country_label(@anime["countryOfOrigin"])}</dd>
             </div>
 
-            <div :if={anime_date(@anime["startDate"])} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+            <div
+              :if={anime_date(@anime["startDate"])}
+              class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5"
+            >
               <dt class="font-semibold text-[var(--text-muted)]">Started</dt>
               <dd>{anime_date(@anime["startDate"])}</dd>
             </div>
 
-            <div :if={anime_date(@anime["endDate"])} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+            <div
+              :if={anime_date(@anime["endDate"])}
+              class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5"
+            >
               <dt class="font-semibold text-[var(--text-muted)]">Ended</dt>
               <dd>{anime_date(@anime["endDate"])}</dd>
             </div>

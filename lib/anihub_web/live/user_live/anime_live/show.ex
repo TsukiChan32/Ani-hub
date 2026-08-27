@@ -179,35 +179,38 @@ defmodule AnihubWeb.AnimeLive.Show do
   defp initial_progress(_, _), do: 0
 
   defp status_button_class(status, current_status) do
-  base =
-    "border px-3 py-1.5 text-sm font-semibold"
+    base = "border px-3 py-2 text-sm font-semibold"
 
-  active? =
-    to_string(status) == to_string(current_status)
+    active? =
+      to_string(status) == to_string(current_status)
 
-  case {to_string(status), active?} do
-    {"watching", true} ->
-      "#{base} border-blue-700 bg-blue-700 text-white"
+    case {to_string(status), active?} do
+      {"watching", true} ->
+        "#{base} border-blue-700 bg-blue-700 text-white"
 
-    {"planning", true} ->
-      "#{base} border-violet-700 bg-violet-700 text-white"
+      {"planning", true} ->
+        "#{base} border-violet-700 bg-violet-700 text-white"
 
-    {"completed", true} ->
-      "#{base} border-emerald-700 bg-emerald-700 text-white"
+      {"completed", true} ->
+        "#{base} border-emerald-700 bg-emerald-700 text-white"
 
-    {"dropped", true} ->
-      "#{base} border-rose-700 bg-rose-700 text-white"
+      {"dropped", true} ->
+        "#{base} border-rose-700 bg-rose-700 text-white"
 
-    {_, false} ->
-      "#{base} border-[var(--border)] bg-[var(--surface-hover)] text-[var(--text)] hover:bg-[var(--surface-strong)]"
+      {_, false} ->
+        "#{base} border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)]"
+    end
   end
-end
+
   defp anime_status_label("RELEASING"), do: "Currently airing"
   defp anime_status_label("FINISHED"), do: "Finished airing"
   defp anime_status_label("NOT_YET_RELEASED"), do: "Not yet released"
   defp anime_status_label("CANCELLED"), do: "Cancelled"
   defp anime_status_label("HIATUS"), do: "On hiatus"
-  defp anime_status_label(status) when is_binary(status), do: String.capitalize(status)
+
+  defp anime_status_label(status) when is_binary(status),
+    do: String.capitalize(status)
+
   defp anime_status_label(_), do: nil
 
   defp season_label(nil), do: nil
@@ -236,30 +239,6 @@ end
 
   defp main_studio(%{"nodes" => [%{"name" => name} | _]}), do: name
   defp main_studio(_), do: nil
-
-  defp airing_status_dot_class(status) do
-    base = "size-2 rounded-full"
-
-    case status do
-      "RELEASING" ->
-        "#{base} bg-emerald-500"
-
-      "FINISHED" ->
-        "#{base} bg-[var(--text-muted)]"
-
-      "NOT_YET_RELEASED" ->
-        "#{base} bg-violet-500"
-
-      "HIATUS" ->
-        "#{base} bg-amber-500"
-
-      "CANCELLED" ->
-        "#{base} bg-rose-500"
-
-      _ ->
-        "#{base} bg-[var(--text-muted)]"
-    end
-  end
 
   defp related_anime(anime) do
     anime
@@ -308,7 +287,6 @@ end
   defp country_label(country), do: country
 
   defp anime_date(nil), do: nil
-
   defp anime_date(%{"year" => nil}), do: nil
 
   defp anime_date(%{"year" => year, "month" => nil}) do

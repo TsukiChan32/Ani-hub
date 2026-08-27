@@ -47,13 +47,18 @@ const LocalCalendar = {
       this.renderCalendar()
     })
   },
+
   updated() {
     this.renderCalendar()
   },
 
-
   renderCalendar() {
     const root = this.el
+
+    // ----------------------------------------
+    // FILTER BUTTONS
+    // ----------------------------------------
+
     const filterButtons =
       root.querySelectorAll("[data-calendar-filter]")
 
@@ -63,24 +68,34 @@ const LocalCalendar = {
 
       if (active) {
         button.classList.add(
-          "bg-[var(--accent-soft)]",
-          "text-[var(--accent)]"
+          "border-[var(--button-border)]",
+          "bg-[var(--accent)]",
+          "text-white"
         )
 
         button.classList.remove(
-          "text-[var(--text-muted)]"
+          "border-[var(--border)]",
+          "bg-[var(--surface)]",
+          "text-[var(--text)]"
         )
       } else {
         button.classList.remove(
-          "bg-[var(--accent-soft)]",
-          "text-[var(--accent)]"
+          "border-[var(--button-border)]",
+          "bg-[var(--accent)]",
+          "text-white"
         )
 
         button.classList.add(
-          "text-[var(--text-muted)]"
+          "border-[var(--border)]",
+          "bg-[var(--surface)]",
+          "text-[var(--text)]"
         )
       }
     })
+
+    // ----------------------------------------
+    // DAYS
+    // ----------------------------------------
 
     const daySections = Array.from(
       root.querySelectorAll("[data-calendar-day]")
@@ -90,13 +105,19 @@ const LocalCalendar = {
 
     daySections.forEach((section) => {
       const date = section.dataset.calendarDay
-      const results = section.querySelector("[data-day-results]")
-      const empty = section.querySelector("[data-day-empty]")
-      const count = section.querySelector("[data-release-count]")
-      const todayBadge = section.querySelector("[data-today-badge]")
+      const results =
+        section.querySelector("[data-day-results]")
+      const empty =
+        section.querySelector("[data-day-empty]")
+      const count =
+        section.querySelector("[data-release-count]")
+      const todayBadge =
+        section.querySelector("[data-today-badge]")
 
       results.innerHTML = ""
+
       empty.classList.remove("hidden")
+
       count.textContent = "0 releases"
 
       dayMap.set(date, {
@@ -106,8 +127,13 @@ const LocalCalendar = {
         count,
         todayBadge,
         releases: 0,
+        visibleReleases: 0,
       })
     })
+
+    // ----------------------------------------
+    // TODAY
+    // ----------------------------------------
 
     const today = this.localDateKey(new Date())
 
@@ -116,145 +142,280 @@ const LocalCalendar = {
         day.todayBadge.classList.remove("hidden")
 
         day.section.classList.add(
-          "rounded-2xl",
-          "border",
-          "border-[var(--accent)]",
-          "bg-[var(--accent-soft)]",
-          "p-5"
+          "border-l-2",
+          "border-l-[var(--accent)]"
         )
       } else {
         day.todayBadge.classList.add("hidden")
 
         day.section.classList.remove(
-          "rounded-2xl",
-          "border",
-          "border-[var(--accent)]",
-          "bg-[var(--accent-soft)]",
-          "p-5"
+          "border-l-2",
+          "border-l-[var(--accent)]"
         )
       }
     })
+
+    // ----------------------------------------
+    // AIRINGS
+    // ----------------------------------------
+
     const airings = Array.from(
       root.querySelectorAll("[data-airing]")
     )
 
     airings.forEach((airing) => {
-      const timestamp = Number(airing.dataset.airingAt) * 1000
-      const date = new Date(timestamp)
-      const dateKey = this.localDateKey(date)
+      const timestamp =
+        Number(airing.dataset.airingAt) * 1000
 
-      const day = dayMap.get(dateKey)
+      const date =
+        new Date(timestamp)
+
+      const dateKey =
+        this.localDateKey(date)
+
+      const day =
+        dayMap.get(dateKey)
 
       if (!day) return
 
       day.releases += 1
 
-      const hours = String(date.getHours()).padStart(2, "0")
-      const minutes = String(date.getMinutes()).padStart(2, "0")
+      const hours =
+        String(date.getHours()).padStart(2, "0")
 
-      const title = airing.dataset.title
-      const mediaId = airing.dataset.mediaId
-      const cover = airing.dataset.cover
-      const episode = airing.dataset.episode
+      const minutes =
+        String(date.getMinutes()).padStart(2, "0")
+
+      const title =
+        airing.dataset.title
+
+      const mediaId =
+        airing.dataset.mediaId
+
+      const cover =
+        airing.dataset.cover
+
+      const episode =
+        airing.dataset.episode
+
       const watching =
         airing.dataset.libraryStatus === "watching"
+
       if (this.filter === "watching" && !watching) {
         return
       }
 
-      const card = document.createElement("a")
-      card.href = `/anime/${mediaId}`
+      day.visibleReleases += 1
 
-      card.className = [
+      // ----------------------------------------
+      // ROW
+      // ----------------------------------------
+
+      const row =
+        document.createElement("a")
+
+      row.href =
+        `/anime/${mediaId}`
+
+      row.className = [
         "group",
-        "flex",
-        "gap-4",
-        "rounded-2xl",
-        "border",
-        "border-[var(--border)]",
-        "bg-[var(--surface)]",
-        "p-3",
-        "transition-colors",
+        "grid",
+        "grid-cols-[52px_minmax(0,1fr)]",
+        "gap-3",
+        "px-3",
+        "py-2",
         "hover:bg-[var(--surface-hover)]",
+        "sm:grid-cols-[52px_64px_minmax(0,1fr)_100px_90px]",
       ].join(" ")
 
-      const img = document.createElement("img")
-      img.src = cover
-      img.alt = title
+      // ----------------------------------------
+      // TIME
+      // ----------------------------------------
+
+      const time =
+        document.createElement("div")
+
+      time.className =
+        "hidden self-center text-xs font-bold text-[var(--text)] sm:block"
+
+      time.textContent =
+        `${hours}:${minutes}`
+
+      // ----------------------------------------
+      // COVER
+      // ----------------------------------------
+
+      const img =
+        document.createElement("img")
+
+      img.src =
+        cover
+
+      img.alt =
+        title
+
       img.className =
-        "h-24 w-16 shrink-0 rounded-xl object-cover"
+        "h-16 w-11 border border-[var(--border)] object-cover"
 
-      const content = document.createElement("div")
-      content.className = "min-w-0 flex-1"
+      // ----------------------------------------
+      // TITLE
+      // ----------------------------------------
 
-      const heading = document.createElement("h3")
+      const content =
+        document.createElement("div")
+
+      content.className =
+        "min-w-0 self-center"
+
+      const heading =
+        document.createElement("div")
+
       heading.className =
-        "line-clamp-2 font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--accent)]"
-      heading.textContent = title
-      const badges = document.createElement("div")
-      badges.className = "mt-2 flex flex-wrap gap-2"
+        "truncate text-sm font-semibold text-[var(--accent)] group-hover:underline"
 
-      if (watching) {
-        const watchingBadge = document.createElement("span")
+      heading.textContent =
+        title
 
-        watchingBadge.className =
-          "rounded-lg bg-blue-500/15 px-2 py-1 text-xs font-semibold text-blue-500"
+      const mobileMeta =
+        document.createElement("div")
 
-        watchingBadge.textContent = "Watching"
+      mobileMeta.className =
+        "mt-1 flex flex-wrap gap-x-2 text-xs text-[var(--text-muted)] sm:hidden"
 
-        badges.appendChild(watchingBadge)
-      }
+      const mobileTime =
+        document.createElement("span")
 
-      const metadata = document.createElement("div")
-      metadata.className =
-        "mt-2 flex flex-wrap items-center gap-2 text-sm text-[var(--text-muted)]"
+      mobileTime.textContent =
+        `${hours}:${minutes}`
 
-      const episodeSpan = document.createElement("span")
-      episodeSpan.textContent = `Episode ${episode}`
+      const mobileEpisode =
+        document.createElement("span")
 
-      const separator = document.createElement("span")
-      separator.className = "text-[var(--border)]"
-      separator.textContent = "•"
+      mobileEpisode.textContent =
+        `Episode ${episode}`
 
-      const timeSpan = document.createElement("span")
-      timeSpan.textContent = `${hours}:${minutes}`
-
-      metadata.append(
-        episodeSpan,
-        separator,
-        timeSpan
+      mobileMeta.append(
+        mobileTime,
+        mobileEpisode
       )
-      content.append(heading)
+
+      content.append(
+        heading,
+        mobileMeta
+      )
+
+      // ----------------------------------------
+      // EPISODE
+      // ----------------------------------------
+
+      const episodeCell =
+        document.createElement("div")
+
+      episodeCell.className =
+        "hidden self-center text-xs sm:block"
+
+      const episodeLabel =
+        document.createElement("div")
+
+      episodeLabel.className =
+        "text-[var(--text-muted)]"
+
+      episodeLabel.textContent =
+        "Episode"
+
+      const episodeValue =
+        document.createElement("div")
+
+      episodeValue.className =
+        "font-semibold text-[var(--text)]"
+
+      episodeValue.textContent =
+        episode
+
+      episodeCell.append(
+        episodeLabel,
+        episodeValue
+      )
+
+      // ----------------------------------------
+      // LIBRARY STATUS
+      // ----------------------------------------
+
+      const statusCell =
+        document.createElement("div")
+
+      statusCell.className =
+        "hidden self-center text-right text-xs sm:block"
 
       if (watching) {
-        content.append(badges)
+        const badge =
+          document.createElement("span")
+
+        badge.className =
+          "inline-block border border-blue-700 bg-blue-700 px-2 py-0.5 font-semibold text-white"
+
+        badge.textContent =
+          "Watching"
+
+        statusCell.appendChild(badge)
+      } else {
+        statusCell.className +=
+          " text-[var(--text-muted)]"
+
+        statusCell.textContent =
+          "—"
       }
 
-      content.append(metadata)
-      card.append(
+      row.append(
+        time,
         img,
-        content
+        content,
+        episodeCell,
+        statusCell
       )
 
-      day.results.appendChild(card)
+      day.results.appendChild(row)
+
       day.empty.classList.add("hidden")
     })
 
+    // ----------------------------------------
+    // COUNTS + EMPTY STATES
+    // ----------------------------------------
+
     dayMap.forEach((day) => {
+      const releases =
+        this.filter === "watching"
+          ? day.visibleReleases
+          : day.releases
+
       const word =
-        day.releases === 1
+        releases === 1
           ? "release"
           : "releases"
 
       day.count.textContent =
-        `${day.releases} ${word}`
+        `${releases} ${word}`
+
+      if (releases === 0) {
+        day.empty.classList.remove("hidden")
+      } else {
+        day.empty.classList.add("hidden")
+      }
     })
   },
 
   localDateKey(date) {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
+    const year =
+      date.getFullYear()
+
+    const month =
+      String(date.getMonth() + 1)
+        .padStart(2, "0")
+
+    const day =
+      String(date.getDate())
+        .padStart(2, "0")
 
     return `${year}-${month}-${day}`
   },
