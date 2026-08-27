@@ -530,30 +530,27 @@ defmodule AnihubWeb.CoreComponents do
   attr :current, :atom, required: true
   attr :current_scope, :map, default: nil
 
-  def app_nav(assigns) do
-    ~H"""
-    <nav class="relative z-[100] mb-10 flex items-center justify-between gap-3">
+def app_nav(assigns) do
+  ~H"""
+  <nav class="relative z-[100] mb-5 border-b border-[var(--border)]">
+    <div class="flex items-center justify-between gap-3 py-3">
       <%!-- Logo --%>
-      <a href="/" class="flex shrink-0 items-center gap-3">
-        <div class="
-          flex size-10 items-center justify-center
-          rounded-xl
-          bg-[var(--accent)]
-          font-bold text-white
-          transition-colors
-          hover:bg-[var(--accent-hover)]
-        ">
+      <a
+        href="/"
+        class="flex shrink-0 items-center gap-2 text-[var(--text)]"
+      >
+        <span class="border border-[var(--button-border)] bg-[var(--accent)] px-2 py-1 text-sm font-bold text-white">
           A
-        </div>
+        </span>
 
-        <span class="hidden text-xl font-bold tracking-tight text-[var(--text)] sm:block">
+        <span class="hidden text-lg font-bold sm:block">
           Anihub
         </span>
       </a>
 
-      <div class="flex items-center gap-1">
+      <div class="flex items-center">
         <%!-- Desktop navigation --%>
-        <div class="hidden items-center gap-1 sm:flex">
+        <div class="hidden items-center sm:flex">
           <a
             href="/"
             class={nav_link_class(@current == :home)}
@@ -576,7 +573,9 @@ defmodule AnihubWeb.CoreComponents do
           </a>
         </div>
 
-        <div class="mx-2 hidden h-5 w-px bg-[var(--border)] sm:block"></div>
+        <span class="mx-3 hidden text-[var(--border)] sm:block">
+          |
+        </span>
 
         <%!-- Logged in account menu --%>
         <%= if @current_scope do %>
@@ -585,124 +584,77 @@ defmodule AnihubWeb.CoreComponents do
               type="button"
               tabindex="0"
               aria-label="Account menu"
-              class="
-                flex size-10 cursor-pointer items-center justify-center
-                rounded-xl
-                text-[var(--text-muted)]
-                transition-colors
-                hover:bg-[var(--surface-hover)]
-                hover:text-[var(--text)]
-              "
+              class="border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
             >
-              <.icon name="hero-user-circle" class="size-5" />
+              Account ▼
             </button>
 
             <div
               tabindex="0"
-              class="
-                dropdown-content
-                absolute right-0 top-12
-                z-[200]
-                w-64
-                overflow-hidden
-                rounded-2xl
-                border border-[var(--border)]
-                bg-[var(--surface)]
-                p-2
-                shadow-xl
-              "
+              class="dropdown-content absolute right-0 top-9 z-[200] w-64 border border-[var(--border)] bg-[var(--surface)] shadow-md"
             >
-              <div class="border-b border-[var(--border)] px-3 py-3">
-                <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <div class="old-panel-header px-3 py-1.5">
+                <p class="text-xs font-bold uppercase text-[var(--text)]">
+                  Account
+                </p>
+              </div>
+
+              <div class="border-b border-[var(--border)] px-3 py-2">
+                <p class="text-xs text-[var(--text-muted)]">
                   Signed in as
                 </p>
 
-                <p class="truncate text-sm font-medium text-[var(--text)]">
+                <p class="mt-0.5 truncate text-sm font-semibold text-[var(--text)]">
                   {@current_scope.user.email}
                 </p>
               </div>
 
-              <a
-                href="/users/settings"
-                class="
-                  mt-2 flex items-center gap-3
-                  rounded-xl px-3 py-2.5
-                  text-sm font-medium
-                  text-[var(--text-muted)]
-                  transition-colors
-                  hover:bg-[var(--surface-hover)]
-                  hover:text-[var(--text)]
-                "
-              >
-                <.icon name="hero-cog-6-tooth" class="size-5" />
-                <span>Settings</span>
-              </a>
+              <div class="py-1">
+                <a
+                  href="/users/settings"
+                  class="block px-3 py-1.5 text-sm text-[var(--accent)] hover:bg-[var(--surface-hover)] hover:underline"
+                >
+                  Settings »
+                </a>
 
-              <.link
-                href="/users/log-out"
-                method="delete"
-                class="
-                  flex w-full items-center gap-3
-                  rounded-xl px-3 py-2.5
-                  text-sm font-medium
-                  text-rose-400
-                  transition-colors
-                  hover:bg-rose-500/10
-                "
-              >
-                <.icon name="hero-arrow-right-on-rectangle" class="size-5" />
-                <span>Log out</span>
-              </.link>
+                <.link
+                  href="/users/log-out"
+                  method="delete"
+                  class="block w-full px-3 py-1.5 text-left text-sm text-rose-500 hover:bg-[var(--surface-hover)] hover:underline"
+                >
+                  Log out »
+                </.link>
+              </div>
             </div>
           </div>
         <% else %>
           <%!-- Guest auth links --%>
+          <div class="hidden items-center gap-1 sm:flex">
+            <a
+              href="/users/log-in"
+              class="px-2 py-1 text-sm text-[var(--accent)] hover:underline"
+            >
+              Log in
+            </a>
+
+            <span class="text-[var(--border)]">
+              |
+            </span>
+
+            <a
+              href="/users/register"
+              class="px-2 py-1 text-sm font-semibold text-[var(--accent)] hover:underline"
+            >
+              Sign up
+            </a>
+          </div>
+
+          <%!-- Guest mobile auth --%>
           <a
             href="/users/log-in"
-            class="
-              hidden rounded-xl px-3 py-2
-              text-sm font-medium
-              text-[var(--text-muted)]
-              transition-colors
-              hover:bg-[var(--surface-hover)]
-              hover:text-[var(--text)]
-              sm:block
-            "
+            class="border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs text-[var(--accent)] sm:hidden"
           >
-            Log in
-          </a>
-
-          <a
-            href="/users/register"
-            class="
-              hidden rounded-xl
-              bg-[var(--accent)]
-              px-4 py-2
-              text-sm font-semibold
-              text-white
-              transition-colors
-              hover:bg-[var(--accent-hover)]
-              sm:block
-            "
-          >
-            Sign up
-          </a>
-
-          <%!-- Guest mobile auth button --%>
-          <a
-            href="/users/log-in"
-            aria-label="Log in"
-            class="
-              flex size-10 items-center justify-center
-              rounded-xl
-              text-[var(--text-muted)]
-              transition-colors
-              hover:bg-[var(--surface-hover)]
-              hover:text-[var(--text)]
-              sm:hidden
-            "
-          >
-            <.icon name="hero-arrow-left-end-on-rectangle" class="size-5" />
+            Login
           </a>
         <% end %>
 
@@ -711,82 +663,65 @@ defmodule AnihubWeb.CoreComponents do
           id="theme-toggle"
           type="button"
           aria-label="Toggle theme"
-          class="
-            flex size-10 cursor-pointer items-center justify-center
-            rounded-xl
-            text-[var(--text-muted)]
-            transition-colors
-            hover:bg-[var(--surface-hover)]
-            hover:text-[var(--text)]
-          "
+          class="ml-2 border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
         >
           <span class="theme-icon-dark">
-            <.icon name="hero-moon" class="size-5" />
+            ◐
           </span>
 
           <span class="theme-icon-light hidden">
-            <.icon name="hero-sun" class="size-5" />
+            ◑
           </span>
         </button>
       </div>
-    </nav>
+    </div>
 
     <%!-- Mobile navigation --%>
-    <div class="
-      relative z-40
-      mb-8 grid grid-cols-3 gap-2
-      rounded-2xl
-      border border-[var(--border)]
-      bg-[var(--surface)]
-      p-1.5
-      sm:hidden
-    ">
+    <div class="grid grid-cols-3 border-x border-t border-[var(--border)] sm:hidden">
       <a
         href="/"
         class={mobile_nav_link_class(@current == :home)}
       >
-        <.icon name="hero-home" class="size-5" />
-        <span>Home</span>
+        Home
       </a>
 
       <a
         href="/library"
         class={mobile_nav_link_class(@current == :library)}
       >
-        <.icon name="hero-bookmark" class="size-5" />
-        <span>Library</span>
+        Library
       </a>
 
       <a
         href="/calendar"
         class={mobile_nav_link_class(@current == :calendar)}
       >
-        <.icon name="hero-calendar-days" class="size-5" />
-        <span>Calendar</span>
+        Calendar
       </a>
     </div>
-    """
-  end
+  </nav>
+  """
+end
 
-  defp nav_link_class(active?) do
-    base =
-      "rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+defp nav_link_class(active?) do
+  base =
+    "px-3 py-1 text-sm"
 
-    if active? do
-      "#{base} bg-[var(--surface-hover)] text-[var(--accent)]"
-    else
-      "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
-    end
-  end
-
-  defp mobile_nav_link_class(active?) do
-    base =
-      "flex min-w-0 items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-sm font-medium transition-colors"
-
-    if active? do
-      "#{base} bg-[var(--surface-hover)] text-[var(--accent)]"
-    else
-      "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
-    end
+  if active? do
+    "#{base} font-bold text-[var(--accent)] underline"
+  else
+    "#{base} text-[var(--text-muted)] hover:text-[var(--accent)] hover:underline"
   end
 end
+
+defp mobile_nav_link_class(active?) do
+  base =
+    "border-r border-[var(--border)] px-2 py-2 text-center text-sm last:border-r-0"
+
+  if active? do
+    "#{base} bg-[var(--surface-hover)] font-bold text-[var(--accent)]"
+  else
+    "#{base} bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent)]"
+  end
+end
+end 
