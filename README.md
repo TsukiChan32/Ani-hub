@@ -1,18 +1,34 @@
-# Anihub
+# AniHub
 
-To start your Phoenix server:
+A small self-hostable anime tracker built with Phoenix LiveView.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+AniHub lets you keep an anime library, track episode progress,
+browse seasonal anime and see upcoming releases.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+It uses AniList for anime metadata. AniHub does not host or stream
+anime.
 
-Ready to run in production? Please [check our deployment guides](https://phoenix.hexdocs.pm/deployment.html).
+## Features
 
-## Learn more
+- Personal anime library
+- Episode progress tracking
+- Personal ratings
+- Seasonal release calendar
+- Anime search
+- Discover page with season, year, genre and sorting filters
+- Passwordless authentication
+- Light / dark theme
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://phoenix.hexdocs.pm/overview.html
-* Docs: https://phoenix.hexdocs.pm
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+## Stack
+
+- Elixir
+- Phoenix / LiveView
+- PostgreSQL
+- AniList GraphQL API
+- Tailwind CSS
+
+## Development
+
+```sh
+mix setup
+mix phx.server
