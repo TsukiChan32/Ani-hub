@@ -107,47 +107,59 @@
 
 /* This file is for your main application CSS */
 /* ========================================
-   ANIHUB THEME
+   ANIHUB THEME — circa 2012
    ======================================== */
 
 :root {
   color-scheme: light;
 
-  --bg: #f4f6fb;
+  --bg: #e9e9e9;
+
   --surface: #ffffff;
-  --surface-hover: #eef1f8;
-  --surface-strong: #e5e9f3;
+  --surface-hover: #f2f2f2;
+  --surface-strong: #dedede;
 
-  --text: #25283a;
-  --text-muted: #6f7488;
+  --text: #202020;
+  --text-muted: #666666;
 
-  --border: #dfe3ed;
+  --border: #b8b8b8;
 
-  --accent: #5865d8;
-  --accent-hover: #4c58c4;
-  --accent-soft: #e9ebff;
+  --accent: #2f6fa8;
+  --accent-hover: #244f78;
+  --accent-soft: #dbe8f3;
+
+  --panel-header-top: #f4f4f4;
+  --panel-header-bottom: #dcdcdc;
+
+  --button-top: #4f8fc8;
+  --button-bottom: #2f6fa8;
+  --button-border: #255a88;
 }
 
 html.dark {
   color-scheme: dark;
 
-  /*
-   * Deliberately NOT near-black.
-   * Softer contrast is much nicer for long sessions.
-   */
-  --bg: #202536;
-  --surface: #292f42;
-  --surface-hover: #343b50;
-  --surface-strong: #3d455c;
+  --bg: #171717;
 
-  --text: #e7e9f2;
-  --text-muted: #aeb4c7;
+  --surface: #242424;
+  --surface-hover: #2e2e2e;
+  --surface-strong: #383838;
 
-  --border: #42495e;
+  --text: #e5e5e5;
+  --text-muted: #a5a5a5;
 
-  --accent: #7c83e8;
-  --accent-hover: #8d93ee;
-  --accent-soft: #343956;
+  --border: #4b4b4b;
+
+  --accent: #5b9bd5;
+  --accent-hover: #79b4e8;
+  --accent-soft: #263a4d;
+
+  --panel-header-top: #3a3a3a;
+  --panel-header-bottom: #2c2c2c;
+
+  --button-top: #4f8fc8;
+  --button-bottom: #2e699e;
+  --button-border: #244f78;
 }
 
 html,
@@ -159,33 +171,128 @@ body {
 body {
   min-height: 100vh;
 
-  transition:
-    background-color 180ms ease,
-    color 180ms ease;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
+/* Classic selected-text treatment */
 ::selection {
-  background: var(--accent);
+  background: #3b78b4;
   color: #ffffff;
 }
 
+/* ========================================
+   OLD-WEB PANELS
+   ======================================== */
+
+.old-panel-header {
+  background: linear-gradient(
+    to bottom,
+    var(--panel-header-top) 0%,
+    var(--panel-header-bottom) 100%
+  );
+
+  border-bottom: 1px solid var(--border);
+}
+
+.old-button {
+  display: inline-block;
+
+  border: 1px solid var(--button-border);
+
+  background: linear-gradient(
+    to bottom,
+    var(--button-top) 0%,
+    var(--button-bottom) 100%
+  );
+
+  color: #ffffff;
+
+  padding: 0.4rem 0.75rem;
+
+  font-size: 0.875rem;
+  font-weight: 700;
+
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 1px rgba(0, 0, 0, 0.15);
+}
+
+.old-button:hover {
+  filter: brightness(1.08);
+}
+
+.old-button:active {
+  background: var(--button-bottom);
+
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* ========================================
+   LINKS
+   ======================================== */
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ========================================
+   FORM CONTROLS
+   ======================================== */
+
+input,
+select,
+textarea {
+  border-radius: 2px !important;
+}
+
+button {
+  border-radius: 2px !important;
+}
+
+/* ========================================
+   PROGRESS
+   ======================================== */
+
 progress {
   appearance: none;
-  border: 0;
+
+  border: 1px solid var(--border);
+
   background: var(--surface-strong);
+
+  height: 10px;
+
+  border-radius: 0;
 }
 
 progress::-webkit-progress-bar {
   background: var(--surface-strong);
-  border-radius: 9999px;
+  border-radius: 0;
 }
 
 progress::-webkit-progress-value {
-  background: var(--accent);
-  border-radius: 9999px;
+  background: linear-gradient(
+    to bottom,
+    var(--button-top),
+    var(--button-bottom)
+  );
+
+  border-radius: 0;
 }
 
 progress::-moz-progress-bar {
-  background: var(--accent);
-  border-radius: 9999px;
+  background: linear-gradient(
+    to bottom,
+    var(--button-top),
+    var(--button-bottom)
+  );
+
+  border-radius: 0;
 }

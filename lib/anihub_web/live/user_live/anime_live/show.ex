@@ -179,30 +179,29 @@ defmodule AnihubWeb.AnimeLive.Show do
   defp initial_progress(_, _), do: 0
 
   defp status_button_class(status, current_status) do
-    base =
-      "rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+  base =
+    "border px-3 py-1.5 text-sm font-semibold"
 
-    active? =
-      to_string(status) == to_string(current_status)
+  active? =
+    to_string(status) == to_string(current_status)
 
-    case {to_string(status), active?} do
-      {"watching", true} ->
-        "#{base} bg-blue-500/15 text-blue-500"
+  case {to_string(status), active?} do
+    {"watching", true} ->
+      "#{base} border-blue-700 bg-blue-700 text-white"
 
-      {"planning", true} ->
-        "#{base} bg-violet-500/15 text-violet-500"
+    {"planning", true} ->
+      "#{base} border-violet-700 bg-violet-700 text-white"
 
-      {"completed", true} ->
-        "#{base} bg-emerald-500/15 text-emerald-500"
+    {"completed", true} ->
+      "#{base} border-emerald-700 bg-emerald-700 text-white"
 
-      {"dropped", true} ->
-        "#{base} bg-rose-500/15 text-rose-500"
+    {"dropped", true} ->
+      "#{base} border-rose-700 bg-rose-700 text-white"
 
-      {_, false} ->
-        "#{base} text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text)]"
-    end
+    {_, false} ->
+      "#{base} border-[var(--border)] bg-[var(--surface-hover)] text-[var(--text)] hover:bg-[var(--surface-strong)]"
   end
-
+end
   defp anime_status_label("RELEASING"), do: "Currently airing"
   defp anime_status_label("FINISHED"), do: "Finished airing"
   defp anime_status_label("NOT_YET_RELEASED"), do: "Not yet released"

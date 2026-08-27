@@ -1,29 +1,52 @@
-<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+<div class="mx-auto max-w-6xl px-3 py-5 sm:px-4">
   <.app_nav current={:home} current_scope={@current_scope} />
 
   <%!-- Search --%>
-  <div class="relative z-50 mb-10">
+  <div class="relative z-50 mb-5 border border-[var(--border)] bg-[var(--surface)] p-2">
     <.live_component module={AnihubWeb.SearchComponent} id="home-search" />
   </div>
 
-  <%!-- Hero --%>
+  <%!-- Featured anime --%>
   <%= if @hero do %>
-    <section class="mb-12 overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]">
-      <div class="grid items-stretch lg:grid-cols-[55%_45%]">
-        <div class="flex flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
-          <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-            Trending #1
-          </p>
+    <section class="mb-6 border border-[var(--border)] bg-[var(--surface)]">
+      <div class="old-panel-header px-3 py-2">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--text)]">
+            Featured anime
+          </h2>
 
-          <h1 class="mt-2 text-4xl font-bold tracking-tight text-[var(--text)] sm:text-5xl">
-            {@hero["title"]["english"] || @hero["title"]["romaji"]}
+          <span class="text-xs font-semibold text-[var(--accent)]">
+            Trending #1
+          </span>
+        </div>
+      </div>
+
+      <div class="grid gap-0 md:grid-cols-[180px_minmax(0,1fr)]">
+        <div class="border-b border-[var(--border)] p-3 md:border-b-0 md:border-r">
+          <%= if @hero["coverImage"]["large"] do %>
+            <img
+              src={@hero["coverImage"]["large"]}
+              alt={@hero["title"]["english"] || @hero["title"]["romaji"]}
+              class="mx-auto aspect-[2/3] w-full max-w-[180px] border border-[var(--border)] object-cover"
+            />
+          <% end %>
+        </div>
+
+        <div class="min-w-0 p-4">
+          <h1 class="text-2xl font-bold leading-tight text-[var(--text)] sm:text-3xl">
+            <.link
+              navigate={~p"/anime/#{@hero["id"]}"}
+              class="text-[var(--accent)] hover:underline"
+            >
+              {@hero["title"]["english"] || @hero["title"]["romaji"]}
+            </.link>
           </h1>
 
-          <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--text-muted)]">
+          <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 border-y border-[var(--border)] py-2 text-sm">
             <%= if @hero["averageScore"] do %>
               <span>
-                Score:
-                <strong class="font-semibold text-[var(--text)]">
+                <span class="text-[var(--text-muted)]">Score:</span>
+                <strong class="text-[var(--text)]">
                   {@hero["averageScore"]}%
                 </strong>
               </span>
@@ -31,8 +54,8 @@
 
             <%= if @hero["episodes"] do %>
               <span>
-                Episodes:
-                <strong class="font-semibold text-[var(--text)]">
+                <span class="text-[var(--text-muted)]">Episodes:</span>
+                <strong class="text-[var(--text)]">
                   {@hero["episodes"]}
                 </strong>
               </span>
@@ -40,8 +63,8 @@
 
             <%= if @hero["seasonYear"] do %>
               <span>
-                Year:
-                <strong class="font-semibold text-[var(--text)]">
+                <span class="text-[var(--text-muted)]">Year:</span>
+                <strong class="text-[var(--text)]">
                   {@hero["seasonYear"]}
                 </strong>
               </span>
@@ -49,62 +72,53 @@
           </div>
 
           <%= if @hero["description"] do %>
-            <div class="mt-5 line-clamp-4 max-w-2xl text-sm leading-7 text-[var(--text-muted)] sm:text-base">
+            <div class="mt-4 line-clamp-6 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">
               {Phoenix.HTML.raw(@hero["description"])}
             </div>
           <% end %>
 
-          <div class="mt-7">
+          <div class="mt-4">
             <.link
               navigate={~p"/anime/#{@hero["id"]}"}
-              class="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-3 font-semibold text-white transition-colors hover:bg-[var(--accent-hover)]"
+              class="old-button"
             >
-              View anime <.icon name="hero-arrow-right" class="size-4" />
+              View anime →
             </.link>
           </div>
-        </div>
-
-        <div class="relative min-h-[320px] lg:min-h-[400px]">
-          <%= if @hero["bannerImage"] do %>
-            <img
-              src={@hero["bannerImage"]}
-              alt={@hero["title"]["english"] || @hero["title"]["romaji"]}
-              class="absolute inset-0 h-full w-full object-cover object-center"
-            />
-          <% else %>
-            <img
-              src={@hero["coverImage"]["large"]}
-              alt={@hero["title"]["english"] || @hero["title"]["romaji"]}
-              class="absolute inset-0 h-full w-full object-cover object-center"
-            />
-          <% end %>
         </div>
       </div>
     </section>
   <% end %>
 
   <%!-- Currently watching --%>
-  <%= if @watching !=[] do %>
-    <section class="mb-14">
-      <div class="mb-6">
-        <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-          Your Library
-        </p>
+  <%= if @watching != [] do %>
+    <section class="mb-6 border border-[var(--border)] bg-[var(--surface)]">
+      <div class="old-panel-header px-3 py-2">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--text)]">
+              Currently watching
+            </h2>
 
-        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[var(--text)]">
-          Currently watching
-        </h2>
+            <p class="mt-0.5 text-xs text-[var(--text-muted)]">
+              Your active library entries
+            </p>
+          </div>
 
-        <p class="mt-2 text-sm text-[var(--text-muted)]">
-          Keep track of your current series.
-        </p>
+          <.link
+            navigate={~p"/library"}
+            class="text-xs font-medium text-[var(--accent)] hover:underline"
+          >
+            View library
+          </.link>
+        </div>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="divide-y divide-[var(--border)]">
         <%= for item <- @watching do %>
           <.link
             navigate={~p"/anime/#{item.anime["id"]}"}
-            class="group flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 transition-colors hover:bg-[var(--surface-hover)]"
+            class="group grid grid-cols-[56px_minmax(0,1fr)] gap-3 p-3 hover:bg-[var(--surface-hover)] sm:grid-cols-[64px_minmax(0,1fr)_180px]"
           >
             <img
               src={item.anime["coverImage"]["large"]}
@@ -112,40 +126,46 @@
                 item.anime["title"]["english"] ||
                   item.anime["title"]["romaji"]
               }
-              class="h-28 w-20 shrink-0 rounded-xl object-cover"
+              class="aspect-[2/3] w-full border border-[var(--border)] object-cover"
             />
 
-            <div class="flex min-w-0 flex-1 flex-col justify-center">
-              <h3 class="line-clamp-2 font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
+            <div class="min-w-0">
+              <h3 class="truncate text-sm font-bold text-[var(--accent)] group-hover:underline">
                 {item.anime["title"]["english"] || item.anime["title"]["romaji"]}
               </h3>
 
-              <div class="mt-3">
-                <div class="flex items-center justify-between gap-3 text-sm">
-                  <span class="text-[var(--text-muted)]">
-                    Progress
-                  </span>
-
-                  <span class="font-semibold text-[var(--text)]">
-                    {progress_value(item.entry.progress)}/{item.anime["episodes"] || "?"}
-                  </span>
-                </div>
-
-                <%= if is_integer(item.anime["episodes"]) && item.anime["episodes"]> 0 do %>
-                  <progress
-                    value={progress_value(item.entry.progress)}
-                    max={item.anime["episodes"]}
-                    class="mt-2 h-2 w-full overflow-hidden rounded-full accent-[var(--accent)]"
-                  >
-                    {progress_value(item.entry.progress)}
-                  </progress>
-                <% end %>
+              <div class="mt-1 text-xs text-[var(--text-muted)]">
+                Watching
               </div>
 
-              <div class="mt-3 flex items-center gap-2 text-sm font-medium text-[var(--accent)]">
-                <span>Watching</span>
-                <.icon name="hero-arrow-right" class="size-4" />
+              <div class="mt-2 text-xs text-[var(--text-muted)] sm:hidden">
+                Progress:
+                <strong class="text-[var(--text)]">
+                  {progress_value(item.entry.progress)}/{item.anime["episodes"] || "?"}
+                </strong>
               </div>
+            </div>
+
+            <div class="hidden min-w-0 self-center sm:block">
+              <div class="flex items-center justify-between gap-3 text-xs">
+                <span class="text-[var(--text-muted)]">
+                  Progress
+                </span>
+
+                <strong class="text-[var(--text)]">
+                  {progress_value(item.entry.progress)}/{item.anime["episodes"] || "?"}
+                </strong>
+              </div>
+
+              <%= if is_integer(item.anime["episodes"]) && item.anime["episodes"] > 0 do %>
+                <progress
+                  value={progress_value(item.entry.progress)}
+                  max={item.anime["episodes"]}
+                  class="mt-1 w-full"
+                >
+                  {progress_value(item.entry.progress)}
+                </progress>
+              <% end %>
             </div>
           </.link>
         <% end %>
@@ -154,46 +174,51 @@
   <% end %>
 
   <%!-- Trending --%>
-  <section>
-    <div class="mb-6">
-      <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-        Discover
-      </p>
+  <section class="border border-[var(--border)] bg-[var(--surface)]">
+    <div class="old-panel-header px-3 py-2">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--text)]">
+            Trending now
+          </h2>
 
-      <h2 class="mt-1 text-3xl font-bold tracking-tight text-[var(--text)]">
-        Trending now
-      </h2>
+          <p class="mt-0.5 text-xs text-[var(--text-muted)]">
+            Popular anime on AniList
+          </p>
+        </div>
 
-      <p class="mt-2 text-sm text-[var(--text-muted)]">
-        Popular anime on AniList right now.
-      </p>
+        <span class="text-xs text-[var(--text-muted)]">
+          {length(@anime)} titles
+        </span>
+      </div>
     </div>
 
-    <%= if @anime==[] do %>
-      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--text-muted)]">
+    <%= if @anime == [] do %>
+      <div class="p-6 text-center text-sm text-[var(--text-muted)]">
         Nothing to show right now.
       </div>
     <% else %>
-      <div class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div class="divide-y divide-[var(--border)]">
         <%= for anime <- @anime do %>
-          <.link navigate={~p"/anime/#{anime["id"]}"} class="group block min-w-0">
-            <div class="overflow-hidden rounded-2xl bg-[var(--surface)]">
-              <img
-                src={anime["coverImage"]["large"]}
-                alt={
-                  anime["title"]["english"] ||
-                    anime["title"]["romaji"]
-                }
-                class="aspect-[2/3] w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
-              />
-            </div>
+          <.link
+            navigate={~p"/anime/#{anime["id"]}"}
+            class="group grid grid-cols-[52px_minmax(0,1fr)] gap-3 p-3 hover:bg-[var(--surface-hover)] sm:grid-cols-[60px_minmax(0,1fr)_90px_90px]"
+          >
+            <img
+              src={anime["coverImage"]["large"]}
+              alt={
+                anime["title"]["english"] ||
+                  anime["title"]["romaji"]
+              }
+              class="aspect-[2/3] w-full border border-[var(--border)] object-cover"
+            />
 
-            <div class="mt-3">
-              <h3 class="truncate font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
+            <div class="min-w-0 self-center">
+              <h3 class="truncate text-sm font-bold text-[var(--accent)] group-hover:underline">
                 {anime["title"]["english"] || anime["title"]["romaji"]}
               </h3>
 
-              <div class="mt-1 flex items-center gap-2 text-sm text-[var(--text-muted)]">
+              <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--text-muted)] sm:hidden">
                 <%= if anime["averageScore"] do %>
                   <span>
                     {anime["averageScore"]}%
@@ -201,14 +226,34 @@
                 <% end %>
 
                 <%= if anime["seasonYear"] do %>
-                  <span class="text-[var(--border)]">
-                    •
-                  </span>
-
                   <span>
                     {anime["seasonYear"]}
                   </span>
                 <% end %>
+              </div>
+            </div>
+
+            <div class="hidden self-center text-right text-xs sm:block">
+              <div class="text-[var(--text-muted)]">
+                Score
+              </div>
+
+              <div class="mt-0.5 font-semibold text-[var(--text)]">
+                <%= if anime["averageScore"] do %>
+                  {anime["averageScore"]}%
+                <% else %>
+                  —
+                <% end %>
+              </div>
+            </div>
+
+            <div class="hidden self-center text-right text-xs sm:block">
+              <div class="text-[var(--text-muted)]">
+                Year
+              </div>
+
+              <div class="mt-0.5 font-semibold text-[var(--text)]">
+                {anime["seasonYear"] || "—"}
               </div>
             </div>
           </.link>

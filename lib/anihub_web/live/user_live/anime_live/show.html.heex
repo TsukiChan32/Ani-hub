@@ -1,390 +1,424 @@
-<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+<div class="mx-auto max-w-6xl px-3 py-5 sm:px-4">
   <.app_nav current={:home} current_scope={@current_scope} />
 
   <%!-- Search --%>
-    <div class="relative z-50 mb-10">
-      <.live_component module={AnihubWeb.SearchComponent} id="anime-search" />
+  <div class="relative z-50 mb-5 border border-[var(--border)] bg-[var(--surface)] p-2">
+    <.live_component module={AnihubWeb.SearchComponent} id="anime-search" />
+  </div>
+
+  <%!-- Breadcrumb --%>
+  <div class="mb-3 text-xs text-[var(--text-muted)]">
+    <.link navigate={~p"/"} class="text-[var(--accent)] hover:underline">
+      Home
+    </.link>
+
+    <span class="mx-1">»</span>
+
+    <span>Anime</span>
+
+    <span class="mx-1">»</span>
+
+    <span class="text-[var(--text)]">
+      {@anime["title"]["english"] || @anime["title"]["romaji"]}
+    </span>
+  </div>
+
+  <%!-- Main information panel --%>
+  <section class="border border-[var(--border)] bg-[var(--surface)]">
+    <div class="old-panel-header px-3 py-2">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-bold uppercase tracking-wide text-[var(--text)]">
+          Anime information
+        </h2>
+
+        <span
+          :if={@anime["status"]}
+          class="text-xs text-[var(--text-muted)]"
+        >
+          {anime_status_label(@anime["status"])}
+        </span>
+      </div>
     </div>
 
-    <%!-- Main anime section --%>
-      <section
-        class="grid items-start gap-8 md:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-12">
-        <%!-- Cover --%>
-          <div class="mx-auto w-full max-w-[280px] md:mx-0">
-            <div class="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]">
-              <img src={@anime["coverImage"]["extraLarge"]} alt={ @anime["title"]["english"] ||
-                @anime["title"]["romaji"] } class="aspect-[2/3] w-full object-cover" />
-            </div>
+    <div class="grid md:grid-cols-[210px_minmax(0,1fr)]">
+      <%!-- Left column --%>
+      <aside class="border-b border-[var(--border)] p-3 md:border-b-0 md:border-r">
+        <img
+          src={@anime["coverImage"]["extraLarge"]}
+          alt={@anime["title"]["english"] || @anime["title"]["romaji"]}
+          class="mx-auto aspect-[2/3] w-full max-w-[190px] border border-[var(--border)] object-cover"
+        />
+
+        <%!-- Basic info --%>
+        <div class="mt-3 border border-[var(--border)] text-xs">
+          <div class="old-panel-header px-2 py-1 font-bold uppercase">
+            Information
           </div>
 
-          <%!-- Information --%>
-            <div class="min-w-0">
-              <header>
-                <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-                  Anime
-                </p>
-
-                <h1 class="mt-2 text-3xl font-bold tracking-tight text-[var(--text)] sm:text-4xl lg:text-5xl">
-                  {@anime["title"]["english"] || @anime["title"]["romaji"]}
-                </h1>
-
-                <%!-- Romaji title --%>
-                  <p :if={ @anime["title"]["english"] && @anime["title"]["romaji"] && @anime["title"]["english"]
-                    !=@anime["title"]["romaji"] } class="mt-2 text-base text-[var(--text-muted)]">
-                    {@anime["title"]["romaji"]}
-                  </p>
-
-                  <%!-- Main metadata --%>
-                    <div class="mt-5 flex flex-wrap gap-2">
-                      <span :if={@anime["averageScore"]}
-                        class="rounded-xl bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-muted)]">
-                        Score
-                        <strong class="ml-1 font-semibold text-[var(--text)]">
-                          {@anime["averageScore"]}%
-                        </strong>
-                      </span>
-
-                      <span :if={@anime["episodes"]}
-                        class="rounded-xl bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-muted)]">
-                        <strong class="font-semibold text-[var(--text)]">
-                          {@anime["episodes"]}
-                        </strong>
-                        episodes
-                      </span>
-
-                      <span :if={@anime["seasonYear"]}
-                        class="rounded-xl bg-[var(--surface)] px-3 py-2 text-sm font-medium text-[var(--text)]">
-                        {@anime["seasonYear"]}
-                      </span>
-                    </div>
-
-                    <%!-- Airing / production metadata --%>
-                      <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--text-muted)]">
-                        <span :if={@anime["status"]} class="flex items-center gap-2">
-                          <span class={airing_status_dot_class(@anime["status"])}></span>
-
-                          <span>
-                            {anime_status_label(@anime["status"])}
-                          </span>
-                        </span>
-
-                        <span :if={@anime["season"] && @anime["seasonYear"]} class="contents">
-                          <span class="text-[var(--border)]">
-                            •
-                          </span>
-
-                          <span>
-                            {season_label(@anime["season"])} {@anime["seasonYear"]}
-                          </span>
-                        </span>
-
-                        <span :if={@anime["format"]} class="contents">
-                          <span class="text-[var(--border)]">
-                            •
-                          </span>
-
-                          <span>
-                            {format_label(@anime["format"])}
-                          </span>
-                        </span>
-
-                        <span :if={@anime["duration"]} class="contents">
-                          <span class="text-[var(--border)]">
-                            •
-                          </span>
-
-                          <span>
-                            {@anime["duration"]} min
-                          </span>
-                        </span>
-
-                        <span :if={main_studio(@anime["studios"])} class="contents">
-                          <span class="text-[var(--border)]">
-                            •
-                          </span>
-
-                          <span>
-                            {main_studio(@anime["studios"])}
-                          </span>
-                        </span>
-                      </div>
-              </header>
-
-              <%!-- Library --%>
-                <%= if @library_entry do %>
-                  <section class="mt-7 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-                    <div class="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
-                          Your Library
-                        </p>
-
-                        <p class="mt-2 text-lg font-bold capitalize text-[var(--text)]">
-                          {@library_entry.status}
-                        </p>
-                      </div>
-
-                      <button phx-click="remove_from_library"
-                        class="rounded-xl px-3 py-2 text-sm font-medium text-rose-500/80 transition-colors hover:bg-rose-500/10 hover:text-rose-500">
-                        Remove
-                      </button>
-                    </div>
-
-                    <%!-- Status --%>
-                      <div class="mt-6">
-                        <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                          Status
-                        </p>
-
-                        <div class="flex flex-wrap gap-2">
-                          <%= for status <- [:watching, :planning, :completed, :dropped] do %>
-                            <button phx-click="set_status" phx-value-status={status} class={ status_button_class(
-                              status, @library_entry.status ) }>
-                              {status
-                              |> Atom.to_string()
-                              |> String.capitalize()}
-                            </button>
-                            <% end %>
-                        </div>
-                      </div>
-
-                      <%!-- Progress --%>
-                        <div class="mt-6">
-                          <div class="flex items-end justify-between gap-4">
-                            <div>
-                              <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                                Progress
-                              </p>
-
-                              <p class="mt-1 text-lg font-bold text-[var(--text)]">
-                                {@library_entry.progress || 0}
-
-                                <span class="font-normal text-[var(--text-muted)]">
-                                  / {@anime["episodes"] || "?"}
-                                </span>
-                              </p>
-                            </div>
-
-                            <div class="flex gap-2">
-                              <button phx-click="decrement_progress" disabled={(@library_entry.progress || 0) <=0}
-                                class="flex size-10 items-center justify-center rounded-xl bg-[var(--surface-hover)] text-lg font-semibold text-[var(--text)] transition-colors hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-30"
-                                aria-label="Decrease progress">
-                                −
-                              </button>
-
-                              <button phx-click="increment_progress" disabled={ @anime["episodes"] !=nil &&
-                                (@library_entry.progress || 0)>= @anime["episodes"]
-                                }
-                                class="flex size-10 items-center justify-center rounded-xl bg-[var(--accent)] text-lg
-                                font-semibold text-white transition-colors hover:bg-[var(--accent-hover)]
-                                disabled:cursor-not-allowed disabled:opacity-30"
-                                aria-label="Increase progress"
-                                >
-                                +
-                              </button>
-                            </div>
-                          </div>
-
-                          <progress :if={is_integer(@anime["episodes"]) && @anime["episodes"]> 0}
-                            value={@library_entry.progress || 0}
-                            max={@anime["episodes"]}
-                            class="mt-4 h-2 w-full overflow-hidden rounded-full"
-                            >
-                            {@library_entry.progress || 0}
-                          </progress>
-                        </div>
-                  </section>
-                  <% else %>
-                    <%!-- Add to library --%>
-                      <section class="mt-7 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
-                          Your Library
-                        </p>
-
-                        <h2 class="mt-1 text-lg font-bold text-[var(--text)]">
-                          Start tracking
-                        </h2>
-
-                        <p class="mt-2 text-sm text-[var(--text-muted)]">
-                          Choose a status to add this anime to your library.
-                        </p>
-
-                        <div class="mt-5 flex flex-wrap gap-2">
-                          <button phx-click="add_to_library" phx-value-status="watching"
-                            class="rounded-xl bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-500 transition-colors hover:bg-blue-500/25">
-                            Watching
-                          </button>
-
-                          <button phx-click="add_to_library" phx-value-status="planning"
-                            class="rounded-xl bg-violet-500/15 px-4 py-2 text-sm font-semibold text-violet-500 transition-colors hover:bg-violet-500/25">
-                            Planning
-                          </button>
-
-                          <button phx-click="add_to_library" phx-value-status="completed"
-                            class="rounded-xl bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-500 transition-colors hover:bg-emerald-500/25">
-                            Completed
-                          </button>
-
-                          <button phx-click="add_to_library" phx-value-status="dropped"
-                            class="rounded-xl bg-rose-500/15 px-4 py-2 text-sm font-semibold text-rose-500 transition-colors hover:bg-rose-500/25">
-                            Dropped
-                          </button>
-                        </div>
-                      </section>
-                      <% end %>
-
-                        <%!-- Genres --%>
-                          <div :if={@anime["genres"] && @anime["genres"] !=[]} class="mt-7 flex flex-wrap gap-2">
-                            <span :for={genre <- @anime["genres"]}
-                              class="rounded-full bg-[var(--accent-soft)] px-3 py-1.5 text-xs font-medium text-[var(--accent)]">
-                              {genre}
-                            </span>
-                          </div>
+          <dl class="divide-y divide-[var(--border)]">
+            <div :if={@anime["format"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Type</dt>
+              <dd>{format_label(@anime["format"])}</dd>
             </div>
-      </section>
 
-      <%!-- Synopsis --%>
-        <section :if={@anime["description"]}
-          class="mt-10 border-t border-[var(--border)] pt-8 md:ml-[288px] lg:ml-[328px]">
-          <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-            About
+            <div :if={@anime["episodes"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Episodes</dt>
+              <dd>{@anime["episodes"]}</dd>
+            </div>
+
+            <div :if={@anime["duration"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Duration</dt>
+              <dd>{@anime["duration"]} min</dd>
+            </div>
+
+            <div :if={@anime["season"] && @anime["seasonYear"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Season</dt>
+              <dd>{season_label(@anime["season"])} {@anime["seasonYear"]}</dd>
+            </div>
+
+            <div :if={@anime["source"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Source</dt>
+              <dd>{source_label(@anime["source"])}</dd>
+            </div>
+
+            <div :if={main_studio(@anime["studios"])} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Studio</dt>
+              <dd>{main_studio(@anime["studios"])}</dd>
+            </div>
+
+            <div :if={@anime["countryOfOrigin"]} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Country</dt>
+              <dd>{country_label(@anime["countryOfOrigin"])}</dd>
+            </div>
+
+            <div :if={anime_date(@anime["startDate"])} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Started</dt>
+              <dd>{anime_date(@anime["startDate"])}</dd>
+            </div>
+
+            <div :if={anime_date(@anime["endDate"])} class="grid grid-cols-[72px_1fr] gap-2 px-2 py-1.5">
+              <dt class="font-semibold text-[var(--text-muted)]">Ended</dt>
+              <dd>{anime_date(@anime["endDate"])}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <%!-- Genres --%>
+        <div
+          :if={@anime["genres"] && @anime["genres"] != []}
+          class="mt-3 border border-[var(--border)]"
+        >
+          <div class="old-panel-header px-2 py-1 text-xs font-bold uppercase">
+            Genres
+          </div>
+
+          <div class="p-2 text-xs leading-6">
+            <%= for {genre, index} <- Enum.with_index(@anime["genres"]) do %>
+              <span class="text-[var(--accent)]">
+                {genre}
+              </span>
+
+              <%= if index < length(@anime["genres"]) - 1 do %>
+                <span class="text-[var(--text-muted)]">, </span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </aside>
+
+      <%!-- Right column --%>
+      <div class="min-w-0 p-4">
+        <header>
+          <h1 class="text-2xl font-bold leading-tight text-[var(--accent)] sm:text-3xl">
+            {@anime["title"]["english"] || @anime["title"]["romaji"]}
+          </h1>
+
+          <p
+            :if={
+              @anime["title"]["english"] &&
+                @anime["title"]["romaji"] &&
+                @anime["title"]["english"] != @anime["title"]["romaji"]
+            }
+            class="mt-1 text-sm text-[var(--text-muted)]"
+          >
+            {@anime["title"]["romaji"]}
           </p>
 
-          <h2 class="mt-1 text-2xl font-bold tracking-tight text-[var(--text)]">
-            Synopsis
-          </h2>
+          <%!-- Main statistics --%>
+          <div class="mt-3 border-y border-[var(--border)] py-2">
+            <div class="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              <span :if={@anime["averageScore"]}>
+                <span class="text-[var(--text-muted)]">Score:</span>
+                <strong>{@anime["averageScore"]}%</strong>
+              </span>
 
-          <div class="mt-4 max-w-3xl text-base leading-8 text-[var(--text-muted)]">
+              <span :if={@anime["episodes"]}>
+                <span class="text-[var(--text-muted)]">Episodes:</span>
+                <strong>{@anime["episodes"]}</strong>
+              </span>
+
+              <span :if={@anime["seasonYear"]}>
+                <span class="text-[var(--text-muted)]">Year:</span>
+                <strong>{@anime["seasonYear"]}</strong>
+              </span>
+
+              <span :if={main_studio(@anime["studios"])}>
+                <span class="text-[var(--text-muted)]">Studio:</span>
+                <strong>{main_studio(@anime["studios"])}</strong>
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <%!-- Library panel --%>
+        <section class="mt-4 border border-[var(--border)]">
+          <div class="old-panel-header flex items-center justify-between gap-3 px-3 py-2">
+            <h2 class="text-sm font-bold uppercase tracking-wide">
+              Your library
+            </h2>
+
+            <button
+              :if={@library_entry}
+              type="button"
+              phx-click="remove_from_library"
+              class="text-xs font-medium text-rose-500 hover:underline"
+            >
+              Remove
+            </button>
+          </div>
+
+          <%= if @library_entry do %>
+            <div class="p-3">
+              <div class="text-sm">
+                <span class="text-[var(--text-muted)]">
+                  Current status:
+                </span>
+
+                <strong class="ml-1 capitalize">
+                  {@library_entry.status}
+                </strong>
+              </div>
+
+              <%!-- Status --%>
+              <div class="mt-4">
+                <div class="mb-1 text-xs font-bold uppercase text-[var(--text-muted)]">
+                  Status
+                </div>
+
+                <div class="flex flex-wrap gap-1">
+                  <%= for status <- [:watching, :planning, :completed, :dropped] do %>
+                    <button
+                      type="button"
+                      phx-click="set_status"
+                      phx-value-status={status}
+                      class={status_button_class(status, @library_entry.status)}
+                    >
+                      {status
+                      |> Atom.to_string()
+                      |> String.capitalize()}
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+
+              <%!-- Progress --%>
+              <div class="mt-4 border-t border-[var(--border)] pt-3">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <span class="text-xs font-bold uppercase text-[var(--text-muted)]">
+                      Progress
+                    </span>
+
+                    <span class="ml-2 text-sm font-semibold">
+                      {@library_entry.progress || 0}/{@anime["episodes"] || "?"}
+                    </span>
+                  </div>
+
+                  <div class="flex gap-1">
+                    <button
+                      type="button"
+                      phx-click="decrement_progress"
+                      disabled={(@library_entry.progress || 0) <= 0}
+                      class="border border-[var(--border)] bg-[var(--surface-hover)] px-3 py-1 text-sm font-bold hover:bg-[var(--surface-strong)] disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      −
+                    </button>
+
+                    <button
+                      type="button"
+                      phx-click="increment_progress"
+                      disabled={
+                        @anime["episodes"] != nil &&
+                          (@library_entry.progress || 0) >= @anime["episodes"]
+                      }
+                      class="old-button px-3 py-1"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <progress
+                  :if={is_integer(@anime["episodes"]) && @anime["episodes"] > 0}
+                  value={@library_entry.progress || 0}
+                  max={@anime["episodes"]}
+                  class="mt-2 w-full"
+                >
+                  {@library_entry.progress || 0}
+                </progress>
+              </div>
+            </div>
+          <% else %>
+            <div class="p-3">
+              <p class="text-sm text-[var(--text-muted)]">
+                This anime is not currently in your library.
+              </p>
+
+              <div class="mt-3 flex flex-wrap gap-1">
+                <button
+                  type="button"
+                  phx-click="add_to_library"
+                  phx-value-status="watching"
+                  class="border border-blue-700 bg-blue-700 px-3 py-1.5 text-sm font-semibold text-white"
+                >
+                  Watching
+                </button>
+
+                <button
+                  type="button"
+                  phx-click="add_to_library"
+                  phx-value-status="planning"
+                  class="border border-violet-700 bg-violet-700 px-3 py-1.5 text-sm font-semibold text-white"
+                >
+                  Planning
+                </button>
+
+                <button
+                  type="button"
+                  phx-click="add_to_library"
+                  phx-value-status="completed"
+                  class="border border-emerald-700 bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white"
+                >
+                  Completed
+                </button>
+
+                <button
+                  type="button"
+                  phx-click="add_to_library"
+                  phx-value-status="dropped"
+                  class="border border-rose-700 bg-rose-700 px-3 py-1.5 text-sm font-semibold text-white"
+                >
+                  Dropped
+                </button>
+              </div>
+            </div>
+          <% end %>
+        </section>
+
+        <%!-- Synopsis --%>
+        <section
+          :if={@anime["description"]}
+          class="mt-4 border border-[var(--border)]"
+        >
+          <div class="old-panel-header px-3 py-2">
+            <h2 class="text-sm font-bold uppercase tracking-wide">
+              Synopsis
+            </h2>
+          </div>
+
+          <div class="p-3 text-sm leading-6 text-[var(--text-muted)]">
             {Phoenix.HTML.raw(@anime["description"])}
           </div>
         </section>
 
-        <%!-- Details --%>
-          <section class="mt-10 border-t border-[var(--border)] pt-8 md:ml-[288px] lg:ml-[328px]">
-            <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-              Information
-            </p>
-
-            <h2 class="mt-1 text-2xl font-bold tracking-tight text-[var(--text)]">
-              Details
+        <%!-- Native title --%>
+        <section
+          :if={@anime["title"]["native"]}
+          class="mt-4 border border-[var(--border)]"
+        >
+          <div class="old-panel-header px-3 py-2">
+            <h2 class="text-sm font-bold uppercase tracking-wide">
+              Alternative titles
             </h2>
+          </div>
 
-            <div class="mt-6 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-              <div :if={@anime["title"]["native"]}>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Native title
-                </p>
+          <div class="grid grid-cols-[110px_1fr] gap-3 p-3 text-sm">
+            <span class="font-semibold text-[var(--text-muted)]">
+              Native
+            </span>
 
-                <p class="mt-1 font-medium text-[var(--text)]">
-                  {@anime["title"]["native"]}
-                </p>
-              </div>
+            <span>
+              {@anime["title"]["native"]}
+            </span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
 
-              <div :if={@anime["source"]}>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Source
-                </p>
+  <%!-- Related anime --%>
+  <section
+    :if={related_anime(@anime) != []}
+    class="mt-6 border border-[var(--border)] bg-[var(--surface)]"
+  >
+    <div class="old-panel-header px-3 py-2">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-bold uppercase tracking-wide">
+          Related anime
+        </h2>
 
-                <p class="mt-1 font-medium text-[var(--text)]">
-                  {source_label(@anime["source"])}
-                </p>
-              </div>
+        <span class="text-xs text-[var(--text-muted)]">
+          Sequels, prequels and related titles
+        </span>
+      </div>
+    </div>
 
-              <div :if={@anime["countryOfOrigin"]}>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Country
-                </p>
+    <div class="divide-y divide-[var(--border)]">
+      <.link
+        :for={relation <- related_anime(@anime)}
+        navigate={~p"/anime/#{relation["node"]["id"]}"}
+        class="group grid grid-cols-[48px_minmax(0,1fr)] gap-3 px-3 py-2 hover:bg-[var(--surface-hover)] sm:grid-cols-[48px_minmax(0,1fr)_90px_80px]"
+      >
+        <img
+          src={relation["node"]["coverImage"]["large"]}
+          alt={
+            relation["node"]["title"]["english"] ||
+              relation["node"]["title"]["romaji"]
+          }
+          class="h-16 w-11 border border-[var(--border)] object-cover"
+        />
 
-                <p class="mt-1 font-medium text-[var(--text)]">
-                  {country_label(@anime["countryOfOrigin"])}
-                </p>
-              </div>
+        <div class="min-w-0 self-center">
+          <div class="truncate text-sm font-semibold text-[var(--accent)] group-hover:underline">
+            {relation["node"]["title"]["english"] ||
+              relation["node"]["title"]["romaji"]}
+          </div>
 
-              <div :if={anime_date(@anime["startDate"])}>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Start date
-                </p>
+          <div class="mt-0.5 text-xs text-[var(--text-muted)] sm:hidden">
+            {relation_label(relation["relationType"])}
+          </div>
+        </div>
 
-                <p class="mt-1 font-medium text-[var(--text)]">
-                  {anime_date(@anime["startDate"])}
-                </p>
-              </div>
+        <div class="hidden self-center text-xs sm:block">
+          <div class="text-[var(--text-muted)]">
+            Relation
+          </div>
 
-              <div :if={anime_date(@anime["endDate"])}>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  End date
-                </p>
+          <div class="font-semibold">
+            {relation_label(relation["relationType"])}
+          </div>
+        </div>
 
-                <p class="mt-1 font-medium text-[var(--text)]">
-                  {anime_date(@anime["endDate"])}
-                </p>
-              </div>
+        <div class="hidden self-center text-right text-xs sm:block">
+          <div class="text-[var(--text-muted)]">
+            Year
+          </div>
 
-              <div :if={main_studio(@anime["studios"])}>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Studio
-                </p>
-
-                <p class="mt-1 font-medium text-[var(--text)]">
-                  {main_studio(@anime["studios"])}
-                </p>
-              </div>
-            </div>
-          </section>
-          <%!-- Related anime --%>
-            <section :if={related_anime(@anime) !=[]} class="mt-12 border-t border-[var(--border)] pt-8">
-              <div>
-                <p class="text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
-                  Related
-                </p>
-
-                <h2 class="mt-1 text-2xl font-bold tracking-tight text-[var(--text)]">
-                  Related anime
-                </h2>
-
-                <p class="mt-2 text-sm text-[var(--text-muted)]">
-                  Sequels, prequels and other related titles.
-                </p>
-              </div>
-
-              <div class="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                <.link :for={relation <- related_anime(@anime)} navigate={~p"/anime/#{relation["node"]["id"]}"}
-                  class="group block min-w-0">
-                  <%!-- Cover --%>
-                    <div class="overflow-hidden rounded-2xl bg-[var(--surface)]">
-                      <img src={relation["node"]["coverImage"]["large"]} alt={ relation["node"]["title"]["english"] ||
-                        relation["node"]["title"]["romaji"] }
-                        class="aspect-[2/3] w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]" />
-                    </div>
-
-                    <%!-- Relation info --%>
-                      <div class="mt-3">
-                        <p class="text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
-                          {relation_label(relation["relationType"])}
-                        </p>
-
-                        <h3
-                          class="mt-1 truncate font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
-                          {relation["node"]["title"]["english"] ||
-                          relation["node"]["title"]["romaji"]}
-                        </h3>
-
-                        <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-[var(--text-muted)]">
-                          <span :if={relation["node"]["format"]}>
-                            {format_label(relation["node"]["format"])}
-                          </span>
-
-                          <span :if={relation["node"]["format"] && relation["node"]["seasonYear"]}
-                            class="text-[var(--border)]">
-                            •
-                          </span>
-
-                          <span :if={relation["node"]["seasonYear"]}>
-                            {relation["node"]["seasonYear"]}
-                          </span>
-                        </div>
-                      </div>
-                </.link>
-              </div>
-            </section>
+          <div class="font-semibold">
+            {relation["node"]["seasonYear"] || "—"}
+          </div>
+        </div>
+      </.link>
+    </div>
+  </section>
 </div>
